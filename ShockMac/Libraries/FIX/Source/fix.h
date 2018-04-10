@@ -328,7 +328,7 @@ fix fix_sqrt (fix x);
 #if defined(powerc) || defined(__powerc)
 long quad_sqrt(long hi, long lo);
 #else
-asm long quad_sqrt(long hi, long lo);
+long quad_sqrt(long hi, long lo);
 #endif
 
 
@@ -430,8 +430,8 @@ fix24 fix24_div_asm(fix24 a, fix24 b);
 
 #else
 
-fix24 asm fix24_mul(fix24 a, fix24 b);
-fix24 asm fix24_div (fix24 a, fix24 b);
+fix24 fix24_mul(fix24 a, fix24 b);
+fix24 fix24_div (fix24 a, fix24 b);
 
 #endif
 
@@ -497,11 +497,11 @@ extern long AsmWideDivide(long hi, long lo, long den);
 }
 
 #else
-extern asm AWide *AsmWideAdd(AWide *target, AWide *source);
-extern asm AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
-extern asm long AsmWideDivide(long hi, long lo, long divisor);
-extern asm AWide *AsmWideNegate(AWide *target);
-extern asm AWide *AsmWideBitShift(AWide *src, long shift);
+extern AWide *AsmWideAdd(AWide *target, AWide *source);
+extern AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
+extern long AsmWideDivide(long hi, long lo, long divisor);
+extern AWide *AsmWideNegate(AWide *target);
+extern AWide *AsmWideBitShift(AWide *src, long shift);
 #endif
 
 

@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "vox.h"
+#include <stdlib.h>
 
 // pointers to arrays for multiplication tables
 fix *zdxdz;
@@ -53,7 +54,7 @@ int vxd_maxd;
 // returns TRUE for success, FALSE if unable to allocate
 bool vx_init(int max_depth)
 {
-   zdxdz = (fix *)NewPtr(2 * max_depth * sizeof(fix));
+   zdxdz = (fix *) malloc(2 * max_depth * sizeof(fix));
    zdydz = zdxdz + max_depth;
 
    #ifdef DBG_ON
@@ -66,7 +67,7 @@ bool vx_init(int max_depth)
 
 void vx_close()
 {
-   DisposePtr((Ptr)zdxdz);
+   free((void *)zdxdz);
 }
 
 // Der, this could be a macro, and

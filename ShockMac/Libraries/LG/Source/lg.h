@@ -46,9 +46,9 @@ extern void *LG_memset(void *dest, int val, unsigned int count);
 extern void *LG_memcpy(void *dest, const void *src, unsigned int count);
 extern void *LG_memmove(void *dest, const void *src, unsigned int count);
 #else
-extern asm void *LG_memset(void *dest, int val, unsigned int count);
-extern asm void *LG_memcpy(void *dest, const void *src, unsigned int count);
-extern asm void *LG_memmove(void *dest, const void *src, unsigned int count);
+extern void *LG_memset(void *dest, int val, unsigned int count);
+extern void *LG_memcpy(void *dest, const void *src, unsigned int count);
+extern void *LG_memmove(void *dest, const void *src, unsigned int count);
 #endif
 
 #define GAMEONLY			1

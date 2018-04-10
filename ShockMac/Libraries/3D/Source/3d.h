@@ -417,7 +417,7 @@ g3s_phandle g3_rotate_light_norm(g3s_vector *v);
 #if (defined(powerc) || defined(__powerc))	
 int g3_project_point(g3s_phandle p);
 #else
-asm int g3_project_point(g3s_phandle p);
+int g3_project_point(g3s_phandle p);
 #endif
 
 	//project already-rotated point. returns true if z>0
