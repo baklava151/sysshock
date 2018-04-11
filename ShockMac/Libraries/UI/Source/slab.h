@@ -88,7 +88,6 @@ errtype uiGetCurrentSlab(uiSlab** slab);
 errtype uiDestroySlab(uiSlab* slab);
 // shuts down a slab, freeing any satellite data. 
 
-
 // Globals
 
 #endif // __SLAB_H

@@ -67,9 +67,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "region.h" 
 #include "mouse.h" 
 #include "error.h"
+#include "slab.h"
 
 // Defines
-
 
 typedef void (*CursorDrawFunc)(int cmd, LGRegion* r, struct _cursor* c, LGPoint pos);
 //  A cursor drawfunc executes the command specified by cmd to draw and undraw cursor
@@ -80,12 +80,12 @@ typedef void (*CursorDrawFunc)(int cmd, LGRegion* r, struct _cursor* c, LGPoint 
 #define CURSOR_UNDRAW      1
 #define CURSOR_DRAW_HFLIP  2 // draw horizontally flipped.  Go figure. 
 
-typedef struct _cursor
+typedef struct _cursor 
 {
-  CursorDrawFunc func;
-  void* state;
-  LGPoint hotspot;
-  short w,h;
+    CursorDrawFunc func;
+    void *state;
+    LGPoint hotspot;
+    short w,h;
 } LGCursor;
 
 // Every region has a cursor stack.  
