@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Includes
 #include "objsim.h"
 #include "objclass.h"
+#include "fix.h"
 
 typedef struct {
 //   COMMON_OBJSPEC_FIELDS;

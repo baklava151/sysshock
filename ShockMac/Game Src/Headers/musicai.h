@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 #include "objects.h"
+#include "lg_types.h"
 
 // C Library Includes
 

@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <malloc.h>
 #include "lg_types.h"
 
-/*
+
 //	Setting, pushing, & popping allocator sets
 
 void MemSetAllocator(void *(*fm)(size_t size),
@@ -143,13 +143,13 @@ void MemUnlockHeap();
 typedef struct {
 	ushort realSeg;		// real mode segment to conventional mem block
 	ushort protSel;		// protected mode selector for conv mem block
-	void far *protPtr;	// protected mode ptr to mem block
+	void *protPtr;	// protected mode ptr to mem block
 } ConvMemBlock;
 
-void far *MallocConvMemBlock(ushort size, ConvMemBlock *pcmb);		// alloc
-void far *ReallocConvMemBlock(ConvMemBlock *pcmb, ushort newsize); // resize
+void *MallocConvMemBlock(ushort size, ConvMemBlock *pcmb);		// alloc
+void *ReallocConvMemBlock(ConvMemBlock *pcmb, ushort newsize); // resize
 int FreeConvMemBlock(ConvMemBlock *pcmb);		// free low memory block
-*/
+
 
 //////////////////////////////
 //

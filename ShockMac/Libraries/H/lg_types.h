@@ -61,4 +61,7 @@ typedef unsigned char ubyte;
 #define FALSE 0
 #endif /* !FALSE */
 
+#define true TRUE
+#define false FALSE
+
 #endif /* !__TYPES_H */

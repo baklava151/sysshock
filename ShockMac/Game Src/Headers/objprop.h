@@ -34,6 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "objgame.h"
 #include "objcrit.h"
 
+#include "lg_types.h"
+
 // The overall object properties typedef
 typedef struct ObjProp {
    int   mass;

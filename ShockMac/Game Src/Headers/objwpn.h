@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 #include "objclass.h"
+#include "lg_types.h"
 
 // Instance Data
 typedef struct {

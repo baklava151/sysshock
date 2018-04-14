@@ -31,6 +31,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GADGET_GAMESCREEN
 
 // Includes
+#include "region.h"
+#include "slab.h"
+#include "event.h"
 
 // C Library Includes
 

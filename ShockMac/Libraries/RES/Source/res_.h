@@ -72,7 +72,7 @@ void ResGrowResDescTable(Id id);
 
 #define DEFAULT_RES_GROWDIRENTRIES 128		// must be power of 2
 
-/*
+
 //	Data alignment aids
 
 #define RES_OFFSET_ALIGN(offset) (((offset)+3)&0xFFFFFFFCL)
@@ -146,7 +146,7 @@ void ResSpewCumStats();					// these are in rescum.c
 #define CUMSTATS(id,field)
 
 #endif
-*/
+
 
 #endif
 

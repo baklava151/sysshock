@@ -32,6 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "gamesys.h"
 #include "objects.h"
 #include "map.h"
+#include "lg_types.h"
+#include "error.h"
+#include "fix.h"
 
 // Defines
 #define DEGREES_OF_FREEDOM 6 // number of physics control axes.  

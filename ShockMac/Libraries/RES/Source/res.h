@@ -61,7 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //еее For now
 //#define DBG_ON		1
 
-#include <Files.h>
+//#include <Files.h>
+#include <unistd.h>
 #include "lg.h"
 
 //#ifndef DATAPATH_H
@@ -96,6 +97,8 @@ typedef ushort RefIndex;	// index part of ref
 #define ID_HEAD 1			// holds head ptr for LRU chain
 #define ID_TAIL 2			// holds tail ptr for LRU chain
 #define ID_MIN 3			// id's from 3 and up are valid
+
+typedef char ResType;
 
 //	---------------------------------------------------------
 //		ACCESS TO RESOURCES (ID'S)  (resacc.c)
@@ -158,14 +161,28 @@ void RefExtractInBlocks(RefTable *prt, Ref ref, void *buff, long blockSize,
 //  because the Mac Resource Mgr takes care of it.
 
 //	Each resource id gets one of these resource descriptors
-
+/*
 typedef struct 
 {
-	Handle	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
+	int	hdl;			// Mac resource handle.  NULL if not in memory (on disk)
 	short	 	filenum;	// Mac resource file number
 	uchar 	lock;			// lock count
 	uchar	flags;			// misc flags (RDF_XXX, see below)
 	uchar 	type;			// resource type (RTYPE_XXX, see restypes.h)
+} ResDesc;
+*/
+
+typedef struct 
+{
+	RefTable* ptr;
+    long size;
+	int filenum;	// Mac resource file number
+	uchar lock;			// lock count
+    long offset;
+	uchar flags;			// misc flags (RDF_XXX, see below)
+	uchar type;			// resource type (RTYPE_XXX, see restypes.h)
+    int next;
+    int prev;
 } ResDesc;
 
 #define RESDESC(id) (&gResDesc[id])					// convert id to resource desc ptr
@@ -184,13 +201,13 @@ extern Id resDescMax;						// max id in res desc
 
 //	Information about resources
 
-#define ResInUse(id) (gResDesc[id].hdl)
-#define ResPtr(id) (*(gResDesc[id].hdl))
+#define ResInUse(id) (gResDesc[id].offset)
+#define ResPtr(id) (gResDesc[id].ptr)
 long ResSize(Id id);										// It's a function now, in res.c
 //#define ResSize(id) (MaxSizeRsrc(gResDesc[id].hdl))
 #define ResLocked(id) (gResDesc[id].lock)
-//#define ResType(id) (gResDesc[id].type)
-//#define ResFilenum(id) (gResDesc[id].filenum)
+#define ResType(id) (gResDesc[id].type)
+#define ResFilenum(id) (gResDesc[id].filenum)
 #define ResFlags(id) (gResDesc[id].flags)
 #define ResCompressed(id) (gResDesc[id].flags & RDF_LZW)
 #define ResIsCompound(id) (gResDesc[id].flags & RDF_COMPOUND)
@@ -215,7 +232,7 @@ typedef enum
 } ResOpenMode;
 
 void ResAddPath(char *path);		// add search path for resfiles
-short ResOpenResFile(FSSpec *specPtr, ResOpenMode mode, bool auxinfo);
+short ResOpenResFile(char *specPtr, ResOpenMode mode, bool auxinfo);
 void ResCloseFile(short filenum);	// close res file
 
 #define ResOpenFile(specPtr) ResOpenResFile(specPtr, ROM_READ, FALSE)
@@ -223,10 +240,10 @@ void ResCloseFile(short filenum);	// close res file
 	(creat) ? ROM_EDITCREATE : ROM_EDIT, TRUE)
 #define ResCreateFile(specPtr) ResOpenResFile(specPtr, ROM_CREATE, TRUE)
 
-//#define MAX_RESFILENUM 15			// maximum file number
+#define MAX_RESFILENUM 15			// maximum file number
 
 //extern Datapath gDatapath;			// res system's datapath (others may use)
-/*
+
 //	---------------------------------------------------------
 //		RESOURCE MEMORY MANAGMENT ROUTINES  (resmem.c)
 //	---------------------------------------------------------
@@ -249,7 +266,7 @@ typedef struct {
 } ResStat;
 
 extern ResStat resStat;				// stats computed if proper DBG bit set
-*/
+
 
 //	----------------------------------------------------------
 //		PUBLIC INTERFACE FOR CREATORS OF RESOURCES
@@ -279,7 +296,7 @@ typedef struct					// For Mac version, an array of these are saved in the
 
 void ResWriteDir(short filenum);	// Mac version: Write out a resource table for the file.
 */
-/*
+
 //	Resource-file disk format:  header, data, dir
 
 typedef struct {
@@ -334,7 +351,7 @@ extern ResFile resFile[MAX_RESFILENUM+1];
 	pde < RESFILE_DIRENTRY(pdir,pdir->numEntries); pde++)
 
 extern char resFileSignature[16];		// magic header
-*/
+
 
 //	--------------------------------------------------------
 //		RESOURCE FILE BUILDING  (resbuild.c)

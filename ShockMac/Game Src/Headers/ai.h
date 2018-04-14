@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 #include "objects.h"
+#include "lg_types.h"
+#include "error.h"
 
 // Defines
 #define NUM_AI_MOODS       5

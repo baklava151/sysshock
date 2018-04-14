@@ -86,7 +86,7 @@ void ResInit()
 	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
 	if (MemError())
 		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
-	
+
 //	gResDesc[ID_HEAD].prev = 0;
 //	gResDesc[ID_HEAD].next = ID_TAIL;
 //	gResDesc[ID_TAIL].prev = ID_HEAD;

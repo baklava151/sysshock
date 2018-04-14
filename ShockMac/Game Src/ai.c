@@ -59,6 +59,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ice.h"
 #include "cyber.h"
 
+#include "error.h"
+#include "fix.h"
+#include "lg_types.h"
+#include "edms.h"
 
 #define AI_EDMS
 

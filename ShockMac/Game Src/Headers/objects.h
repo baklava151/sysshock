@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
 */
 
+#include "lg_types.h"
 
 // The overriding concept: there is a master array of all objects in the game.
 // This is an array of the Obj structure.  Every object has a distinct ID
