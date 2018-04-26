@@ -35,28 +35,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //#include <io.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 //#include <lg.h>
 #include "res.h"
 #include "res_.h"
-//#include <lzw.h>
-//#include <memall.h>
+#include "lzw.h"
+#include "memall.h"
 //#include <_res.h>
+#include "dbg.h"
 
 //	The resource descriptor table
 
 ResDesc *gResDesc;								// ptr to array of resource descriptors
+ResDesc2 *gResDesc2;
+
 Id resDescMax;									// max id in res desc
 #define DEFAULT_RESMAX 1023			// default max resource id
 #define DEFAULT_RESGROW 1024		// grow by blocks of 1024 resources
 														// must be power of 2!
 //	Some variables
-/*
+
 ResStat resStat;						// stats held here
 static bool resPushedAllocators;	// did we push our allocators?
+
+long SwapLongBytes(long in)
+{
+/*
+	long	out;
+	*(uchar*)&out = *(((uchar *)&in)+3);
+	*(((uchar*)&out)+1) = *(((uchar *)&in)+2);
+	*(((uchar*)&out)+2) = *(((uchar *)&in)+1);
+	*(((uchar*)&out)+3) = *(uchar *)&in;
+	return(out);
 */
+	return in;
+}
+
+short SwapShortBytes(short in)
+{
+/*
+	short out;
+	*(uchar*)&out = *(((uchar *)&in)+1);
+	*(((uchar*)&out)+1) = *(uchar *)&in;
+	return(out);
+*/
+	return in;
+}
 
 //	---------------------------------------------------------
 //		INITIALIZATION AND TERMINATION
@@ -64,52 +91,47 @@ static bool resPushedAllocators;	// did we push our allocators?
 //
 //	ResInit() initializes resource manager.
 
+void ResInitInternal(void)  
+{  
+   char *p;  
+   int i;  
+  
+//   ResMemInit();  
+   LzwInit();  
+  
+//  Allocate initial resource descriptor table, default size (can't fail)  
+  
+   resDescMax = DEFAULT_RESMAX;  
+   gResDesc = (ResDesc *) Calloc((DEFAULT_RESMAX + 1) *  
+                                 (sizeof(ResDesc) + sizeof(ResDesc2)));  
+   gResDesc2 = (ResDesc2 *) (gResDesc + (DEFAULT_RESMAX + 1));  
+  
+#if 0  
+   gResDesc[ID_HEAD].prev = 0;  
+   gResDesc[ID_HEAD].next = ID_TAIL;  
+   gResDesc[ID_TAIL].prev = ID_HEAD;  
+   gResDesc[ID_TAIL].next = 0;  
+#endif  
+  
+//  Clear file descriptor array  
+  
+   for (i = 0; i <= MAX_RESFILENUM; i++)  
+      resFile[i].fd = NULL;  
+  
+//  Add directory pointed to by RES env var to search path  
+/*  
+   p = getenv("RES");  
+   if (p)  
+      ResAddPath(p);  
+*/
+   Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));  
+  
+} 
+
 void ResInit()
 {
-//	char *p;
-//	int i;
-/*
-//	We must exit cleanly
-
-	AtExit(ResTerm);
-
-//	Set memory allocator, init LZW system
-
-	MemPushAllocator(ResMalloc, ResRealloc, ResFree);
-	resPushedAllocators = TRUE;
-	LzwInit();
-*/
-
-//	Allocate initial resource descriptor table, default size (can't fail)
-
-	resDescMax = DEFAULT_RESMAX;
-	gResDesc = (ResDesc *)NewPtrClear( (DEFAULT_RESMAX + 1) * sizeof(ResDesc) );
-	if (MemError())
-		DebugStr("\pResInit: Can't allocate the global resource descriptor table.\n");
-
-//	gResDesc[ID_HEAD].prev = 0;
-//	gResDesc[ID_HEAD].next = ID_TAIL;
-//	gResDesc[ID_TAIL].prev = ID_HEAD;
-//	gResDesc[ID_TAIL].next = 0;
-
-/*
-//	Clear file descriptor array
-
-	for (i = 0; i <= MAX_RESFILENUM; i++)
-		resFile[i].fd = -1;
-
-//	Add directory pointed to by RES env var to search path
-
-	p = getenv("RES");
-	if (p)
-		ResAddPath(p);
-
-	Spew(DSRC_RES_General, ("ResInit: res system initialized\n"));
-
-//	Install default pager
-
-	ResInstallPager(ResDefaultPager);
-*/
+    AtExit(ResTerm);
+    ResInitInternal();
 }
 
 //	---------------------------------------------------------
@@ -118,8 +140,8 @@ void ResInit()
 
 void ResTerm()
 {
-//	int i;
-/*
+	int i;
+
 //	Close all open resource files
 
 	for (i = 0; i <= MAX_RESFILENUM; i++)
@@ -130,18 +152,19 @@ void ResTerm()
 
 //	Spew out cumulative stats if want them
 
-	DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
-*/
+//	DBG(DSRC_RES_CumStat, {ResSpewCumStats();});
+
 
 //	Free up resource descriptor table
 
 	if (gResDesc)
 	{
-		DisposePtr((Ptr)gResDesc);
+		free((void *)gResDesc);
 		gResDesc = NULL;
+        gResDesc2 = NULL;
 		resDescMax = 0;
 	}
-/*
+
 //	Pop allocators
 
 	if (resPushedAllocators)
@@ -151,11 +174,11 @@ void ResTerm()
 		}
 
 //	We're outta here
-
+/*
 	Spew(DSRC_RES_General, ("ResTerm: res system terminated\n"));
 */
 }
-
+/*
 //	---------------------------------------------------------
 //  For Mac version:  This is now a function, because we have to check a few things
 //  before returning the size.
@@ -174,7 +197,7 @@ long ResSize(Id id)
 	else
 		return (MaxSizeRsrc(prd->hdl));			// For normal resources, 
 }																	// return the res map size.
-
+*/
 //	---------------------------------------------------------
 //
 //	ResGrowResDescTable() grows resource descriptor table to
@@ -188,7 +211,7 @@ long ResSize(Id id)
 void ResGrowResDescTable(Id id)
 {
 	long	newAmt, currAmt;
-	Ptr	growPtr;
+	ResDesc* growPtr;
 
 //	Calculate size of new table and size of current
 
@@ -201,16 +224,16 @@ void ResGrowResDescTable(Id id)
 	{
 //		Spew(DSRC_RES_General,
 //			("ResGrowResDescTable: extending to $%x entries\n", newAmt));
-
 //		SetPtrSize((Ptr)gResDesc, newAmt * sizeof(ResDesc));
-		growPtr = NewPtr(newAmt * sizeof(ResDesc));
-		if (MemError() != noErr)
+		growPtr = (ResDesc *) Realloc(gResDesc, newAmt * sizeof(ResDesc));
+		if (growPtr == NULL)
 		{
-			DebugStr("\pResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
+			fprintf(stderr, "ResGrowDescTable: CANT GROW DESCRIPTOR TABLE!!!\n");
 			return;
 		}
-		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
-		DisposePtr((Ptr)gResDesc);
+//		BlockMove(gResDesc, growPtr, currAmt * sizeof(ResDesc));
+	        memcpy(growPtr, gResDesc, currAmt * sizeof(ResDesc));
+//		Free((void *)gResDesc);
 		gResDesc = (ResDesc *)growPtr;
 		LG_memset(gResDesc + currAmt, 0, (newAmt - currAmt) * sizeof(ResDesc));
 		resDescMax = newAmt - 1;

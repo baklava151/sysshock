@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "res.h"
 #include "res_.h"
@@ -107,6 +108,141 @@ void ResAddPath(char *path)
 //  For Mac version:  Use the ResourceMgr routines to open and create Res files.
 //  Skip all the EditInfo and Dir stuff.
 
+int ResOpenResFile(char *fname, ResOpenMode mode, bool auxinfo)
+{
+//static int openMode[] = {
+//	O_RDONLY | O_BINARY,
+//	O_RDWR | O_BINARY,
+//	O_RDWR | O_BINARY};
+
+	int filenum;
+	FILE*	fd;
+	ResFile *prf;
+	ResFileHeader fileHead;
+	ResDirHeader dirHead;
+    bool cd_spoof = FALSE;
+
+//	Find free file number, else return -1
+
+	filenum = ResFindFreeFilenum();
+	if (filenum < 0)
+		{
+//		Warning(("ResOpenResFile: no free filenum for: %s\n", fname));
+		return(-1);
+		}
+
+//	If any mode but create, open along datapath.  If can't open,
+//	return error except if mode 2 (edit/create), in which case
+//	drop thru to create case by faking mode 3.
+
+	if (mode != ROM_CREATE)
+		{
+//		fd = DatapathFDOpen(&gDatapath, fname, openMode[mode]);
+		fd = fopen(fname, "rb");
+		if (fd != NULL)
+			{
+//			read(fd, &fileHead, sizeof(ResFileHeader));
+			fread(&fileHead, sizeof(ResFileHeader), 1, fd);
+			fileHead.dirOffset = SwapLongBytes(fileHead.dirOffset);		//���
+			if (strncmp(fileHead.signature, resFileSignature,
+				sizeof(resFileSignature)) != 0)
+				{
+//				close(fd);
+				fclose(fd);
+//				Warning(("ResOpenResFile: %s is not valid resource file\n", fname));
+				return(-3);
+				}
+			}
+		else
+			{
+			if (mode == ROM_EDITCREATE)
+				mode = ROM_CREATE;
+			else
+				{
+//				Warning(("ResOpenResFile: can't open file: %s\n", fname));
+				return(-2);
+				}
+			}
+		}
+
+//	If create mode, or edit/create failed, try to open file for creation.
+
+	if (mode == ROM_CREATE)
+		{
+//		fd = open(fname, O_CREAT | O_TRUNC | O_RDWR | O_BINARY,
+//			S_IREAD | S_IWRITE);
+		fd = fopen(fname, "wb");
+		if (fd == NULL)
+			{
+//			Warning(("ResOpenResFile: Can't create file: %s\n", fname));
+			return(-2);
+			}
+		}
+
+//	If aux info, allocate space for it
+
+	prf = &resFile[filenum];
+	prf->pedit = NULL;
+	if (mode || auxinfo)
+		{
+		prf->pedit = (ResEditInfo *)malloc(sizeof(ResEditInfo));
+		if (prf->pedit == NULL)
+			{
+//			Warning(("ResOpenResFile: unable to allocate ResEditInfo\n"));
+//			close(fd);
+			fclose(fd);
+			return(-4);
+			}
+		}
+
+//	Record resFile[] file descriptor
+
+	prf->fd = fd;
+//	Spew(DSRC_RES_General, ("ResOpenResFile: opening: %s at filenum %d\n",
+//		fname, filenum));
+
+//	Switch based on mode
+
+	switch (mode)
+		{
+
+//	If open existing file, read directory into edit info & process, or
+//	if no edit info then process piecemeal.
+
+		case ROM_READ:
+		case ROM_EDIT:
+		case ROM_EDITCREATE:
+			if (prf->pedit)
+				{
+				ResReadEditInfo(prf);
+				ResReadDir(prf, filenum);
+				}
+			else
+				{
+//				lseek(fd, fileHead.dirOffset, SEEK_SET);
+				fseek(fd, fileHead.dirOffset, SEEK_SET);
+//				read(fd, &dirHead, sizeof(ResDirHeader));
+				fread(&dirHead, 1, sizeof(ResDirHeader), fd);
+				dirHead.numEntries = SwapShortBytes(dirHead.numEntries); 	//
+				dirHead.dataOffset = SwapLongBytes(dirHead.dataOffset);		//
+				ResReadDirEntries(filenum, &dirHead);
+				}
+			break;
+
+//	If open for create, initialize header & dir
+
+		case ROM_CREATE:
+			ResCreateEditInfo(prf, filenum);
+			ResCreateDir(prf);
+			break;
+		}
+
+//	Return filenum
+
+	return(filenum);
+}
+
+ /*
 short ResOpenResFile(char *specPtr, ResOpenMode mode, bool auxinfo)
 {
 	short  		filenum, fd;
@@ -175,7 +311,7 @@ short ResOpenResFile(char *specPtr, ResOpenMode mode, bool auxinfo)
 	}
 	
 	// Read in resource map info into the array of resource descriptions
-/*
+
 	numTypes =  Count1Types();
 	for (ti = 1; ti <= numTypes; ti++)
 	{
@@ -192,17 +328,18 @@ short ResOpenResFile(char *specPtr, ResOpenMode mode, bool auxinfo)
 		}
 		SetResLoad(true);
 	}
-*/
 
-    
+
+    ResProcDirEntry(ResDirEntry *pDirEntry, filenum, long dataOffset)
     
 	return(filenum);
 }
-/*
+*/
+/* I was modifying this until I realized it was probably not needed
 //	---------------------------------------------------------
 //  Add a resource description
 //	---------------------------------------------------------
-void AddResDesc(int resHdl, short resID, ResType macResType, short filenum, char cFlag)
+void AddResDesc(ResDirEntry *pDirEntry, short resID, ResType macResType, short filenum, char cFlag)
 {
 	Id				id = resID;
 	ResDesc 	*prd;
@@ -217,7 +354,7 @@ void AddResDesc(int resHdl, short resID, ResType macResType, short filenum, char
 //		pDirEntry->id));
 
 	prd = RESDESC(id);
-	if (prd->hdl)
+	if (prd->offset)
 	{
 		fputs("AddResDesc: RESOURCE ID COLLISION AT ID ?!!\n", stderr);
 //		CUMSTATS(pDirEntry->id,numOverwrites);
@@ -252,12 +389,12 @@ void AddResDesc(int resHdl, short resID, ResType macResType, short filenum, char
 //	If loadonopen flag set, load resource
 
 	if (pDirEntry->flags & RDF_LOADONOPEN)
-		{
-		currOffset = tell(resFile[filenum].fd);
+	{
+		currOffset = lseek(resFile[filenum].fd, 0L, SEEK_SET);
 		ResLoadResource(pDirEntry->id);
 		ResAddToTail(prd);
 		lseek(resFile[filenum].fd, currOffset, SEEK_SET);
-		}
+	}
 
 }
 */
@@ -290,7 +427,7 @@ void ResCloseFile(short filenum)
 
 //	Make sure file is open
 
-	if (resFile[filenum].fd < 0)
+	if (resFile[filenum].fd == NULL)
 		{
 		Warning(("ResCloseFile: filenum %d not in use\n"));
 		return;
@@ -325,8 +462,8 @@ void ResCloseFile(short filenum)
 
 //	Close file
 
-	close(resFile[filenum].fd);
-	resFile[filenum].fd = -1;
+	fclose(resFile[filenum].fd);
+	resFile[filenum].fd = NULL;
 
 }
 
@@ -385,7 +522,7 @@ int ResFindFreeFilenum()
 
 	for (filenum = 0; filenum <= MAX_RESFILENUM; filenum++)
 		{
-		if (resFile[filenum].fd < 0)
+		if (resFile[filenum].fd == NULL)
 			return(filenum);
 		}
 	return(-1);
@@ -402,7 +539,8 @@ int ResFindFreeFilenum()
 void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 {
 #define NUM_DIRENTRY_BLOCK 64		// (12 bytes each)
-	int entry,fd;
+	int entry;
+    FILE* fd;
 	long dataOffset;
 	ResDirEntry *pDirEntry;
 	ResDirEntry dirEntries[NUM_DIRENTRY_BLOCK];
@@ -425,7 +563,8 @@ void ResReadDirEntries(int filenum, ResDirHeader *pDirHead)
 
 		if (pDirEntry >= &dirEntries[NUM_DIRENTRY_BLOCK])
 			{
-			read(fd, dirEntries, sizeof(ResDirEntry) * NUM_DIRENTRY_BLOCK);
+                //read(fd, dirEntries, sizeof(ResDirEntry) * NUM_DIRENTRY_BLOCK);
+                fread(dirEntries, sizeof(ResDirEntry), NUM_DIRENTRY_BLOCK, fd);
 			pDirEntry = &dirEntries[0];
 			}
 
@@ -485,12 +624,14 @@ void ResProcDirEntry(ResDirEntry *pDirEntry, int filenum, long dataOffset)
 //	If loadonopen flag set, load resource
 
 	if (pDirEntry->flags & RDF_LOADONOPEN)
-		{
-		currOffset = lseek (resFile[filenum].fd, 0L, SEEK_CUR);
+	{
+//		currOffset = lseek (resFile[filenum].fd, 0L, SEEK_CUR);
+        currOffset = fseek (resFile[filenum].fd, 0L, SEEK_CUR);
 		ResLoadResource(pDirEntry->id);
 		ResAddToTail(prd);
-		lseek(resFile[filenum].fd, currOffset, SEEK_SET);
-		}
+//		lseek(resFile[filenum].fd, currOffset, SEEK_SET);
+        fseek(resFile[filenum].fd, currOffset, SEEK_SET);
+	}
 }
 
 //	--------------------------------------------------------------
@@ -507,8 +648,10 @@ void ResReadEditInfo(ResFile *prf)
 
 //	Seek to start of file, read in header
 
-	lseek(prf->fd, 0L, SEEK_SET);
-	read(prf->fd, &pedit->hdr, sizeof(pedit->hdr));
+//	lseek(prf->fd, 0L, SEEK_SET);
+    fseek(prf->fd, 0L, SEEK_SET);
+//	read(prf->fd, &pedit->hdr, sizeof(pedit->hdr));
+    fread(&pedit->hdr, sizeof(pedit->hdr), 1, prf->fd);
 
 //	Set no directory (yet, anyway)
 
@@ -533,8 +676,10 @@ void ResReadDir(ResFile *prf, int filenum)
 
 	pedit = prf->pedit;
 	phead = &pedit->hdr;
-	lseek(prf->fd, phead->dirOffset, SEEK_SET);
-	read(prf->fd, &dirHead, sizeof(ResDirHeader));
+//	lseek(prf->fd, phead->dirOffset, SEEK_SET);
+    fseek(prf->fd, phead->dirOffset, SEEK_SET);
+//	read(prf->fd, &dirHead, sizeof(ResDirHeader));
+    fread(&dirHead, sizeof(ResDirHeader), 1, prf->fd);
 
 //	Allocate space for directory, copy directory header into it
 
@@ -546,10 +691,11 @@ void ResReadDir(ResFile *prf, int filenum)
 	*pdir = dirHead;
 
 //	Read in directory into allocated space (past header)
-
+/*
 	read(prf->fd, RESFILE_DIRENTRY(pdir,0),
 		dirHead.numEntries * sizeof(ResDirEntry));
-
+*/
+    fread(RESFILE_DIRENTRY(pdir,0), sizeof(ResDirEntry), dirHead.numEntries, prf->fd);
 //	Scan directory, setting resource descriptors & counting data bytes
 
 	pedit->currDataOffset = pdir->dataOffset;
@@ -566,7 +712,8 @@ void ResReadDir(ResFile *prf, int filenum)
 
 //	Seek to current data location
 
-	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
+//	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
+    fseek(prf->fd, pedit->currDataOffset, SEEK_SET);
 }
 
 //	--------------------------------------------------------------
@@ -597,7 +744,8 @@ void ResCreateDir(ResFile *prf)
 		(sizeof(ResDirEntry) * pedit->numAllocDir));
 	pedit->pdir->numEntries = 0;
 	pedit->currDataOffset = pedit->pdir->dataOffset = sizeof(ResFileHeader);
-	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
+//	lseek(prf->fd, pedit->currDataOffset, SEEK_SET);
+    fseek(prf->fd, pedit->currDataOffset, SEEK_SET);
 }
 
 //	-------------------------------------------------------------
@@ -616,9 +764,11 @@ void ResWriteDir(int filenum)
 		filenum));
 */
 	prf = &resFile[filenum];
-	lseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
-	write(prf->fd, prf->pedit->pdir, sizeof(ResDirHeader) +
-		(prf->pedit->pdir->numEntries * sizeof(ResDirEntry)));
+//	lseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
+    fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
+    
+	write(fileno(prf->fd), prf->pedit->pdir, sizeof(ResDirHeader) +
+          (prf->pedit->pdir->numEntries * sizeof(ResDirEntry))); //too wonky to rewrite with fwrite
 }
 
 //	--------------------------------------------------------
@@ -639,6 +789,8 @@ void ResWriteHeader(int filenum)
 	prf = &resFile[filenum];
 	prf->pedit->hdr.dirOffset = prf->pedit->currDataOffset;
 
-	lseek(prf->fd, 0L, SEEK_SET);
-	write(prf->fd, &prf->pedit->hdr, sizeof(ResFileHeader));
+//	lseek(prf->fd, 0L, SEEK_SET);
+    fseek(prf->fd, 0L, SEEK_SET);
+//	write(prf->fd, &prf->pedit->hdr, sizeof(ResFileHeader));
+    fwrite(&prf->pedit->hdr, sizeof(ResFileHeader), 1, prf->fd);
 }

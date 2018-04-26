@@ -1,9 +1,16 @@
-OBJECTS := resfile.o
+OBJECTS := res.o lzw.o restypes.o resbuild.o resacc.o refacc.o resload.o resfile.o resmake.o
+
+reslib.o: $(OBJECTS)
+	ld -m elf_i386 -r $(OBJECTS) -o reslib.o
 
 all: $(OBJECTS)
 
 %.o: %.c
-	gcc -m32 -O2 -c -I../../LG/Source -I../../H -D__RESTYPES_H -Wno-unused-result -o $@ $<
+ifeq ($(DBG),y)
+	gcc -c -fpack-struct -g -m32 -I../../H -I../../LG/Source -Wno-unused-result -o $@ $<
+else
+	gcc -c -fpack-struct -O2 -m32 -I../../H -I../../LG/Source -Wno-unused-result -o $@ $<
+endif
 
 .PHONY: clean
 

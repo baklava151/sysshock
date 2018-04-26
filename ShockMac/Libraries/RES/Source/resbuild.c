@@ -32,19 +32,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <io.h>
 //#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "res.h"
 #include "res_.h"
 #include "lzw.h"
+#include "memall.h"
 //#include <_res.h>
 
-/*
+
 #define CTRL_Z 26		// make sure comment ends with one, so can type a file
 
 //	Internal prototypes
 
 bool ResEraseIfInFile(Id id);				// erase item from file
-*/
+static void ResCopyBytes(FILE* fd, long writePos, long readPos, long size);
 
 //	-------------------------------------------------------
 //
@@ -53,9 +55,9 @@ bool ResEraseIfInFile(Id id);				// erase item from file
 //	For Mac version:  Does nothing.  May go back later and add comment via the
 // desktop database, maybe.
 
-void ResSetComment(int /*filenum*/, char* /*comment*/)
+void ResSetComment(int filenum, char* comment)
 {
-/*
+
 	ResFileHeader *phead;
 
 	DBG(DSRC_RES_ChkIdRef, {if (resFile[filenum].pedit == NULL) { \
@@ -70,7 +72,7 @@ void ResSetComment(int /*filenum*/, char* /*comment*/)
 	memset(phead->comment, 0, sizeof(phead->comment));
 	strncpy(phead->comment, comment, sizeof(phead->comment) - 2);
 	phead->comment[strlen(phead->comment)] = CTRL_Z;
-*/
+
 }
 
 //	-------------------------------------------------------
@@ -90,6 +92,7 @@ void ResSetComment(int /*filenum*/, char* /*comment*/)
 
 int ResWrite(Id id)
 {
+    /*
 	ResDesc 	*prd;
 	long 			compsize = -1;
 	long 			size = 0;
@@ -151,7 +154,8 @@ int ResWrite(Id id)
 	}
 	else
 		return (-1);
-/*
+    */
+
 static uchar pad[] = {0,0,0,0,0,0,0,0};
 	ResDesc *prd;
 	ResFile *prf;
@@ -207,14 +211,16 @@ static uchar pad[] = {0,0,0,0,0,0,0,0};
 
 //	If compound, write out reftable without compression
 
-	lseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
+//	lseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
+    fseek(prf->fd, prf->pedit->currDataOffset, SEEK_SET);
 	p = prd->ptr;
 	sizeTable = 0;
 	size = prd->size;
 	if (prd->flags & RDF_COMPOUND)
 		{
 		sizeTable = REFTABLESIZE(((RefTable *) p)->numRefs);
-		write(prf->fd, p, sizeTable);
+		//write(prf->fd, p, sizeTable);
+        fwrite(p, sizeTable, 1, prf->fd);
 		p += sizeTable;
 		size -= sizeTable;
 		}
@@ -232,7 +238,8 @@ static uchar pad[] = {0,0,0,0,0,0,0,0};
 		else
 			{
 			pDirEntry->csize = sizeTable + compsize;
-			write(prf->fd, pcompbuff, compsize);
+			//write(prf->fd, pcompbuff, compsize);
+            fwrite(pcompbuff, compsize, 1, prf->fd);
 			}
 		Free(pcompbuff);
 		}
@@ -242,16 +249,19 @@ static uchar pad[] = {0,0,0,0,0,0,0,0};
 	if (!(pDirEntry->flags & RDF_LZW))
 		{
 		pDirEntry->csize = prd->size;
-		write(prf->fd, p, size);
+		//write(prf->fd, p, size);
+        fwrite(p, size, 1, prf->fd);
 		}
 
 //	Pad to align on data boundary
 
 	padBytes = RES_OFFSET_PADBYTES(pDirEntry->csize);
 	if (padBytes)
-		write(prf->fd, pad, padBytes);
-
-if (tell(prf->fd) & 3)
+		//write(prf->fd, pad, padBytes);
+        fwrite(pad, padBytes, 1, prf->fd);
+    
+// formerly lseek
+if (fseek (prf->fd, 0L, SEEK_CUR) & 3)
 	Warning(("ResWrite: misaligned writing!\n"));
 
 //	Advance dir num entries, current data offset
@@ -259,7 +269,7 @@ if (tell(prf->fd) & 3)
 	prf->pedit->pdir->numEntries++;
 	prf->pedit->currDataOffset =
 		RES_OFFSET_ALIGN(prf->pedit->currDataOffset + pDirEntry->csize);
-*/
+
 }
 
 //	-------------------------------------------------------------
@@ -273,8 +283,8 @@ if (tell(prf->fd) & 3)
 
 void ResKill(Id id)
 {
+    /*
 	Handle	resHdl;
-	ResDesc *prd = RESDESC(id);
 
 	if (prd->hdl)
 	{
@@ -286,9 +296,11 @@ void ResKill(Id id)
 //		if (prd->lock == 0)
 //			ResRemoveFromLRU(prd);
 	}
-	LG_memset(prd, 0, sizeof(ResDesc));
 
-/*
+    */
+
+   	ResDesc *prd = RESDESC(id);
+
 	//	Check for valid id
 
 	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return;});
@@ -308,10 +320,11 @@ void ResKill(Id id)
 	//	If so, erase it
 
 	ResEraseIfInFile(id);
-*/
+
+  	LG_memset(prd, 0, sizeof(ResDesc));
 }
 
-/*
+
 //	-------------------------------------------------------------
 //
 //	ResPack() removes holes from a resource file.
@@ -384,13 +397,14 @@ long ResPack(int filenum)
 //	Set new current data offset
 
 	prf->pedit->currDataOffset = dataWrite;
-	lseek(prf->fd, dataWrite, SEEK_SET);
+	//lseek(prf->fd, dataWrite, SEEK_SET);
+    fseek(prf->fd, dataWrite, SEEK_SET);
 	prf->pedit->flags &= ~RFF_NEEDSPACK;
 
 //	Truncate file to just header & data (will be extended later when
 //	write directory on closing)
 
-	chsize(prf->fd, dataWrite);
+	ftruncate(fileno(prf->fd), dataWrite);
 
 //	Return # bytes reclaimed
 
@@ -401,20 +415,24 @@ long ResPack(int filenum)
 
 #define SIZE_RESCOPY 32768
 
-static void ResCopyBytes(int fd, long writePos, long readPos, long size)
+static void ResCopyBytes(FILE* fd, long writePos, long readPos, long size)
 {
 	long sizeCopy;
 	uchar *buff;
 
-	buff = Malloc(SIZE_RESCOPY);
+	buff = (uchar *) Malloc(SIZE_RESCOPY);
 
 	while (size > 0)
 		{
 		sizeCopy = min(SIZE_RESCOPY, size);
-		lseek(fd, readPos, SEEK_SET);
-		read(fd, buff, sizeCopy);
-		lseek(fd, writePos, SEEK_SET);
-		write(fd, buff, sizeCopy);
+		//lseek(fd, readPos, SEEK_SET);
+        fseek(fd, readPos, SEEK_SET);
+		//read(fd, buff, sizeCopy);
+        fread(buff, sizeCopy, 1, fd);
+		//lseek(fd, writePos, SEEK_SET);
+        fseek(fd, writePos, SEEK_SET);
+		//write(fd, buff, sizeCopy);
+        fwrite(buff, sizeCopy, 1, fd);
 		readPos += sizeCopy;
 		writePos += sizeCopy;
 		size -= sizeCopy;
@@ -460,4 +478,3 @@ bool ResEraseIfInFile(Id id)
 
 	return FALSE;
 }
-*/

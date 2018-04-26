@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "res.h"
+#include "restypes.h"
 
 //	Resource type names
 
@@ -96,7 +97,7 @@ char *resTypeNames[NUM_RESTYPENAMES] =
 	"APP15",
 	"APP16",
 };
-
+/*
 // For Mac version, table of 4-char ResTypes corresponding to each Shock resType.
 
 ResType resMacTypes[NUM_RESTYPENAMES] =
@@ -166,4 +167,4 @@ ResType resMacTypes[NUM_RESTYPENAMES] =
 	'sA15',
 	'sA16',
 };
-
+*/

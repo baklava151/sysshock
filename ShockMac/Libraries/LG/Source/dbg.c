@@ -414,12 +414,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 //#include <stdlib.h>
-//#include <stdarg.h>
+#include <stdarg.h>
 #include <string.h>
 //#include <conio.h>
 
+#include "custom.h"
 #include "dbg.h"
-//#include <lgsprntf.h>
+#include "kbcook.h"
+#include "lgsprntf.h"
 //#include <mprintf.h>
 //#include <memall.h>
 //#include <kb.h>
@@ -451,7 +453,7 @@ void DoWarningMsg(char *msg)
 #endif
 }
 
-/*
+
 #ifdef DBG_ON
 
 DbgBank dbgBank[NUM_DBG_BANKS];
@@ -472,7 +474,7 @@ int errErrCode;
 
 extern char *pExitMsg;
 
-void DbgHandleC(int reportType, ulong src, char *fmt, __va_list __arg);
+void DbgHandleC(int reportType, ulong src, char *fmt, va_list __arg);
 
 //	----------------------------------------------------------
 //		REPORTING ROUTINES
@@ -990,18 +992,19 @@ static bool exiting = FALSE;
 #endif
 
 //	If error, exit cleanly
-
+/*
 	if ((reportType == DBG_ERROR) && !exiting)
 		{
 		exiting = TRUE;
 		Exit(errErrCode, buff);
 		}
+*/
 }
 
 char *dbgTags[] = {"","WARNING: ","WARN USER: ","ERROR: "};
-void DbgHandleC(int reportType, ulong src, char *fmt, __va_list __arg)
+void DbgHandleC(int reportType, ulong src, char *fmt, va_list __arg)
 {
-	__va_list myarg;
+	va_list myarg;
 	char buff[1024];
 
 //	Format message into buffer
@@ -1014,5 +1017,3 @@ void DbgHandleC(int reportType, ulong src, char *fmt, __va_list __arg)
 }
 
 #pragma on(unreferenced);
-*/
-

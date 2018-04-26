@@ -54,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string.h>
+#include <stdlib.h>
 //#include <dos.h>
 #include "memall.h"
 #include "dbg.h"
@@ -248,7 +249,7 @@ void MemCheckOff()
 {
 	MemPopAllocator();
 }
-
+/*
 //	----------------------------------------------------------
 //		CONVENTIONAL MEMORY ALLOCATION
 //	----------------------------------------------------------
@@ -262,7 +263,7 @@ void MemCheckOff()
 //
 //	Returns: far ptr to block in low memory, or NULL
 
-void far *MallocConvMemBlock(ushort size, ConvMemBlock *pcmb)
+void *MallocConvMemBlock(ushort size, ConvMemBlock *pcmb)
 {
 	union REGS regs;
 
@@ -292,7 +293,7 @@ void far *MallocConvMemBlock(ushort size, ConvMemBlock *pcmb)
 //
 //	Returns: far ptr to realloc'ed block
 
-void far *ReallocConvMemBlock(ConvMemBlock *pcmb, ushort newsize)
+void *ReallocConvMemBlock(ConvMemBlock *pcmb, ushort newsize)
 {
 	union REGS regs;
 	long realAddr;
@@ -333,7 +334,7 @@ int FreeConvMemBlock(ConvMemBlock *pcmb)
 		return(-1);
 	return(0);
 }
-
+*/
 //	---------------------------------------------------------------
 //		INTERNAL ROUTINES
 //	---------------------------------------------------------------
@@ -386,5 +387,4 @@ void *ReallocChecked(void *p, size_t size)
 
 	return(pnew);
 }
-
-
+

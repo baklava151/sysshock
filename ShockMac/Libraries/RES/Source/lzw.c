@@ -126,10 +126,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifndef __LZW_H
 #include "lzw.h"
 #endif
+#include "memall.h"
 
 //	Important constants
 
@@ -228,8 +230,8 @@ int LzwMallocBuffer()
 
 	if ((lzwBuffer == NULL) || (!lzwBufferMalloced))
 		{
-//		buff = Malloc(LZW_BUFF_SIZE);
-		buff = NewPtr(LZW_BUFF_SIZE);
+		buff = Malloc(LZW_BUFF_SIZE);
+//		buff = NewPtr(LZW_BUFF_SIZE);
 		if (buff == NULL)
 			{
 			Warning(("LzwMallocBuffer: failed to allocate buffers\n"));
@@ -252,8 +254,8 @@ void LzwFreeBuffer()
 {
 	if (lzwBufferMalloced)
 		{
-//		Free(lzwBuffer);
-		DisposePtr((Ptr)lzwBuffer);
+		Free(lzwBuffer);
+//		DisposePtr((Ptr)lzwBuffer);
 		lzwBuffer = NULL;
 		lzwBufferMalloced = FALSE;
 		}
@@ -455,7 +457,6 @@ typedef struct {
 
 LzwE lzwe;		// current expand state
 
-
 static unsigned int LzwInputCode(uchar (*f_SrcGet)())
 {
 	unsigned int return_value;
@@ -473,7 +474,6 @@ static unsigned int LzwInputCode(uchar (*f_SrcGet)())
 	return(return_value);
 }
 
-
 long LzwExpand(
 	void (*f_SrcCtrl)(long srcLoc, LzwCtrl ctrl),	// func to control source
 	uchar (*f_SrcGet)(),						// func to get bytes from source
@@ -485,7 +485,6 @@ long LzwExpand(
 	long destSize								// # dest bytes to capture (if 0, all)
 )
 {
-
 //	If not already initialized, do it
 
 	if (lzwBuffer == NULL)
@@ -515,7 +514,8 @@ long LzwExpand(
 
 	if (--lzwe.destSkip < 0)
 		{
-		(*f_DestPut)(lzwe.old_code); lzwe.outputSize++;
+		(*f_DestPut)(lzwe.old_code); 
+		lzwe.outputSize++;
 		}
 
 //	This is the expansion loop.  It reads in codes from the source until
@@ -588,7 +588,6 @@ DONE_EXPAND:
 
 	(*f_SrcCtrl)(srcLoc, END);
 	(*f_DestCtrl)(destLoc, END);
-
 	return(lzwe.outputSize);
 }
 
@@ -612,7 +611,7 @@ uchar LzwBuffSrcGet()
 	return(*lzwBuffSrcPtr++);
 }
 
-/*
+
 //	---------------------------------------------------------------
 //
 //	LzwFdSrcCtrl() and LzwFdSrcGet() implement a file-descriptor
@@ -657,7 +656,7 @@ uchar LzwFpSrcGet()
 {
 	return(fgetc(lzwFpSrc));
 }
-*/
+
 
 //	---------------------------------------------------------------
 //		STANDARD OUTPUT SOURCES
@@ -679,7 +678,7 @@ void LzwBuffDestPut(uchar byte)
 	*lzwBuffDestPtr++ = byte;
 }
 
-/*
+
 //	---------------------------------------------------------------
 //
 //	LzwFdDestCtrl() and LzwFdDestPut() implement a file-descriptor
@@ -729,7 +728,7 @@ void LzwFpDestPut(uchar byte)
 {
 	fputc(byte, lzwFpDest);
 }
-*/
+
 
 //	---------------------------------------------------------------
 //
@@ -739,11 +738,11 @@ void LzwFpDestPut(uchar byte)
 
 //#pragma off(unreferenced);
 
-void LzwNullDestCtrl(long /*destLoc*/, LzwCtrl /*ctrl*/)
+void LzwNullDestCtrl(long destLoc, LzwCtrl ctrl)
 {
 }
 
-void LzwNullDestPut(uchar /*byte*/)
+void LzwNullDestPut(uchar byte)
 {
 }
 

@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "res.h"
 #include "res_.h"
 #include "lzw.h"
+#include "memall.h"
 //#include <_res.h>
 
 
@@ -75,11 +76,11 @@ void *ResLoadResource(Id id)
 
 	//	Allocate memory, setting magic id so pager can tell who it is if need be.
 
-//	idBeingLoaded = id;
-//	prd->ptr = Malloc(prd->size);
-//	idBeingLoaded = ID_NULL;
-//	if (prd->ptr == NULL)
-//		return(NULL);
+	idBeingLoaded = id;
+	prd->ptr = (RefTable *)Malloc(prd->size);
+	idBeingLoaded = ID_NULL;
+	if (prd->ptr == NULL)
+		return(NULL);
 
 	//	Tally memory allocated to resources
 
@@ -92,7 +93,7 @@ void *ResLoadResource(Id id)
 //	CUMSTATS(id,numLoads);
 
 	//	Load from disk
-
+/*
 	if (prd->flags & RDF_LZW)
 	{
 		LoadCompressedResource(prd, id);
@@ -104,7 +105,8 @@ void *ResLoadResource(Id id)
 		else if (*prd->hdl == nil)
 			LoadResource(prd->hdl);
 	}
-//	ResRetrieve(id, nil);
+*/
+	ResRetrieve(id, prd->ptr);
 
 	//	Tally stats
 
@@ -112,9 +114,9 @@ void *ResLoadResource(Id id)
 
 	//	Return handle
 
-	return(prd->hdl);
+	return(prd->ptr);
 }
-
+/*
 //	---------------------------------------------------------
 //  Load a compressed resource.  It's different enough for the Mac version to
 //  warrant its own function.
@@ -198,8 +200,8 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 	HUnlock(mirrorHdl);
 	DisposeHandle(mirrorHdl);						// Free the mirror buffer.
 }
+*/
 
-/*
 //	---------------------------------------------------------
 //
 //	ResRetrieve() retrieves a resource from disk.
@@ -212,16 +214,16 @@ void LoadCompressedResource(ResDesc *prd, Id id)
 bool ResRetrieve(Id id, void *buffer)
 {
 	ResDesc *prd;
-//	int fd;
-//	uchar *p;
-//	long size;
-//	RefIndex numRefs;
+	FILE* fd;
+	uchar *p;
+	long size;
+	RefIndex numRefs;
 
 	//	Check id and file number
 
 //	DBG(DSRC_RES_ChkIdRef, {if (!ResCheckId(id)) return FALSE;});
 	prd = RESDESC(id);
-//	fd = resFile[prd->filenum].fd;
+	fd = resFile[prd->filenum].fd;
 //	DBG(DSRC_RES_ChkIdRef, {if (fd < 0) { \
 //		Warning(("ResRetrieve: id $%x doesn't exist\n", id)); \
 //		return FALSE; \
@@ -229,7 +231,8 @@ bool ResRetrieve(Id id, void *buffer)
 	
 	//	Seek to data, set up
 
-	lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+	//lseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
+    fseek(fd, RES_OFFSET_DESC2REAL(prd->offset), SEEK_SET);
 	p = buffer;
 	size = prd->size;
 
@@ -237,10 +240,12 @@ bool ResRetrieve(Id id, void *buffer)
 
 	if (prd->flags & RDF_COMPOUND)
 		{
-		read(fd, p, sizeof(short));
+            //read(fd, p, sizeof(short));
+            fread(p, sizeof(short), 1, fd);
 		numRefs = *(short *)p;
 		p += sizeof(short);
-		read(fd, p, sizeof(long) * (numRefs + 1));
+		//read(fd, p, sizeof(long) * (numRefs + 1));
+        fread(p, sizeof(long), (numRefs+1), fd);
 		p += sizeof(long) * (numRefs + 1);
       size -= REFTABLESIZE(numRefs);
 		}
@@ -250,8 +255,9 @@ bool ResRetrieve(Id id, void *buffer)
 	if (prd->flags & RDF_LZW)
 		LzwExpandFd2Buff(fd, p, 0, 0);
 	else
-		read(fd, p, size);
+		//read(fd, p, size);
+        fread(p, size, 1, fd);
 
 	return TRUE;
 }
-*/
+

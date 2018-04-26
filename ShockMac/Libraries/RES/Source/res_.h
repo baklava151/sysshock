@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_res.h>
 //#endif
 
-/*
+
 //	----------------------------------------------------------
 //		FOR RESOURCE SYSTEM INTERNAL USE - DON'T BE BAD!
 //	----------------------------------------------------------
@@ -48,21 +48,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 bool ResCheckId(Id id);				// returns TRUE if id ok, else FALSE + warns
 bool RefCheckRef(Ref ref);			// returns TRUE if ref ok, else FALSE & warns
-*/
+
 
 //	Resource loading (resload.c)
 
 void *ResLoadResource(Id id);
 bool ResRetrieve(Id id, void *buffer);
 
-/*
+
 //	Resource paging (resmem.c)
 
 void *ResDefaultPager(long size);
 extern void *(*f_pager)(long size);
-extern Id idBeingLoaded;
+Id idBeingLoaded;
 #define RES_PAGER(size) (*f_pager)(size)
-*/
+
 
 //	Grow descriptor table (res.c)
 

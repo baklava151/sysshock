@@ -33,7 +33,7 @@ void TestListRes(short filenum);
 void TestExtractRefs(short filenum);
 void TestGetRefs(short filenum);
 void main(void);
-void DumpBlock(Ptr p, short psize);
+void DumpBlock(/*Ptr*/char* p, short psize);
 
 
 //---------------------------------------------------------
@@ -41,14 +41,14 @@ void DumpBlock(Ptr p, short psize);
 //---------------------------------------------------------
 void main(void)
 {
-	StandardFileReply	reply;
-	SFTypeList				typeList;
+//	StandardFileReply	reply;
+//	SFTypeList				typeList;
 	short						filenum;
 
 	ResInit();
 	
 	printf("Open a resource file...\n");
-	
+	/*
 	typeList[0] = 'Sgam';
 	typeList[1] = 'rsrc';
 	StandardGetFile(nil, 2, typeList, &reply);
@@ -59,6 +59,10 @@ void main(void)
 		filenum = ResOpenFile(&reply.sfFile);
 		printf("Opened file, filenum = %d\n", filenum);
 	}
+    */
+
+    filenum = ResOpenFile("./CYBSTRNG.RES");
+	printf("Opened file, filenum = %d\n", filenum);
 
 	printf("\nLoaded Resources...\n\n");
 	TestListRes(filenum);
@@ -91,11 +95,11 @@ void TestListRes(short filenum)
 		prd = RESDESC(id);
 		if (prd->filenum == filenum)
 		{
-			ResLock(id);
+//			ResLock(id);
 			rs = ResSize(id);
-			ResUnlock(id);
-			printf("%6d    %4.4s   0x%08x    %6d   0x%04x\n", 
-						id, (char *)&resMacTypes[prd->type], prd->hdl, rs, prd->flags);
+//			ResUnlock(id);
+			printf("%6d    %4.4s   0x%08x    %6d   0x%04x\n",
+            id, (char *)&resTypeNames[prd->type], prd->ptr, rs, prd->flags);
 		}
 	}
 }
@@ -106,7 +110,8 @@ void TestListRes(short filenum)
 void TestGetRefs(short filenum)
 {
 	int		i;
-	Ptr		p;
+//	Ptr		p;
+    char* p;
 
 	for (i = 0; i < 3; i++)
 	{
@@ -122,7 +127,8 @@ void TestGetRefs(short filenum)
 void TestExtractRefs(short filenum)
 {
 	int		i, rfs;
-	Ptr		p;
+//	Ptr		p;
+    char* p;
 	RefTable *rt;
 
 	rt = ResReadRefTable(1002);
@@ -130,11 +136,12 @@ void TestExtractRefs(short filenum)
 	for (i = 0; i < 3; i++)
 	{
 		rfs = RefSize(rt, i);
-		p = NewPtrClear(rfs);
+//		p = NewPtrClear(rfs);
+        p = calloc(1, rfs);
 		RefExtract(rt, MKREF(1002, i), p);
 		printf("Ref %d\n", i);
 		DumpBlock(p, rfs);
-		DisposePtr(p);
+		free(p);
 	}
 	
 	ResFreeRefTable(rt);
@@ -143,10 +150,11 @@ void TestExtractRefs(short filenum)
 //----------------------------------------------------------------------------------
 //  Dumps the contents of a pointer.
 //----------------------------------------------------------------------------------
-void DumpBlock(Ptr p, short psize)
+void DumpBlock(/*Ptr*/ char* p, short psize)
 {
 	short 	c = 1;
-	Ptr		cur = p;
+//	Ptr		cur = p;
+    char* cur = p;
 	uchar	ch;
 	
 	while ((cur - p) < psize)

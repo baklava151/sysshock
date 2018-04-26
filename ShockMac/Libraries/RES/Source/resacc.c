@@ -63,10 +63,10 @@ void *ResLock(Id id)
 	//	If resource not loaded, load it
 
 	prd = RESDESC(id);
-	if (ResLoadResource(id) == nil)
-		return(nil);
-//	else if (prd->lock == 0)
-//		ResRemoveFromLRU(prd);
+	if (ResLoadResource(id) == NULL)
+		return(NULL);
+	else if (prd->lock == 0)
+		ResRemoveFromLRU(prd);
 
 	//	Tally stats, check for over-lock
 
@@ -78,12 +78,14 @@ void *ResLock(Id id)
 	prd->lock++;
 
 	//	Return ptr
-
+/*
 	if (prd->lock == 1)
-		HLock(prd->hdl);
-	return(*prd->hdl);
+//		ResLock(id);
+        fail;
+*/
+	return(prd->ptr);
 }
-
+/*
 //	---------------------------------------------------------
 //
 //	ResLockHi() Mac only!  Locks a resource, moves hi, and returns ptr.
@@ -98,17 +100,17 @@ void *ResLockHi(Id id)
 
 	//	If resource not loaded, load it.
 	prd = RESDESC(id);
-	if (ResLoadResource(id) == nil)
-		return(nil);
+	if (ResLoadResource(id) == NULL)
+		return(NULL);
 	
 	// Lock the handle.
 	prd->lock++;
 	if (prd->lock == 1)
 		HLockHi(prd->hdl);
 	
-	return(*prd->hdl);
+	return(prd->ptr);
 }
-
+*/
 //	---------------------------------------------------------
 //
 //	ResUnlock() unlocks a resource.
@@ -136,8 +138,8 @@ void ResUnlock(Id id)
 		prd->lock--;
 	if (prd->lock == 0)
 	{
-		HUnlock(prd->hdl);
-//		ResAddToTail(prd);
+//		HUnlock(prd->hdl);
+		ResAddToTail(prd);
 //		DBG(DSRC_RES_Stat, {resStat.numLocked--;});
 	}
 }
@@ -170,14 +172,14 @@ void *ResGet(Id id)
 	if (ResLoadResource(id) == NULL)
 		return(NULL);
 	
-//	ResAddToTail(prd);
-//	if (prd->lock == 0)
-//		ResMoveToTail(prd);
+	ResAddToTail(prd);
+	if (prd->lock == 0)
+		ResMoveToTail(prd);
 
 	//	Return ptr
 	
-	HLock(prd->hdl);
-	return(*prd->hdl);
+//	HLock(prd->ptr);
+	return(prd->ptr);
 }
 
 
@@ -198,13 +200,13 @@ void *ResExtract(Id id, void *buffer)
 
 	if (ResLoadResource(id) == NULL)
 		return(NULL);
-	
+/*	
 	HLock(prd->hdl);
 	BlockMove(*prd->hdl, buffer, GetHandleSize(prd->hdl));
 	HUnlock(prd->hdl);
 	return(buffer);
-	
-/*
+*/	
+
 	//	Retrieve the data into the buffer, please
 
 	if (ResRetrieve(id, buffer))
@@ -216,7 +218,7 @@ void *ResExtract(Id id, void *buffer)
 	//	If ResRetreive failed, return NULL ptr
 
 	return(NULL);
-*/
+
 }
 
 
@@ -246,8 +248,8 @@ void ResDrop(Id id)
 
 	//	Remove from LRU chain
 
-//	if (prd->lock == 0)
-//		ResRemoveFromLRU(prd);
+	if (prd->lock == 0)
+		ResRemoveFromLRU(prd);
 
 	//	Tally stats
 
@@ -257,11 +259,12 @@ void ResDrop(Id id)
 //			prd->size, resStat.totMemAlloc));});
 
 	//	Free memory and set ptr to NULL
-
+/*
 	if (prd->hdl)
 	{
 		EmptyHandle(prd->hdl);
 	}
+*/
 }
 
 //	-------------------------------------------------------
@@ -287,25 +290,25 @@ void ResDelete(Id id)
 
 	//	If in use: if in ram, free memory & LRU, then in any case zap entry
 
-//	if (prd->offset)
-//	{
+	if (prd->offset)
+	{
 //		Spew(DSRC_RES_DelDrop, ("ResDelete: deleting $%x\n", id));
-		if (prd->hdl)
-		{
+//		if (prd->hdl)
+//		{
 //			Spew(DSRC_RES_DelDrop, ("ResDelete: freeing memory for $%x\n", id));
 //			DBG(DSRC_RES_Stat, {resStat.totMemAlloc -= prd->size;
 //				resStat.numLoaded--;
 //				Spew(DSRC_RES_Stat, ("ResDelete: free %d, total now %d bytes\n",
 //					prd->size, resStat.totMemAlloc));});
 
-			ReleaseResource(prd->hdl);				// release the resource.
-			prd->hdl = NULL;
+//			ReleaseResource(prd->hdl);				// release the resource.
+//			prd->hdl = NULL;
 
-//			if (prd->lock == 0)
-//				ResRemoveFromLRU(prd);
-		}
+			if (prd->lock == 0)
+				ResRemoveFromLRU(prd);
+//		}
 		LG_memset(prd, 0, sizeof(ResDesc));
-//	}
+	}
 
 //	Else if not in use, spew to whoever's listening
 

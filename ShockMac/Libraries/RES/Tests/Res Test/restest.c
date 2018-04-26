@@ -41,12 +41,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //  Prototypes
 //--------------------------------------
 int RestestHeapWalk();
-void TestCreateFile(FSSpec *specPtr);
-void TestDumpFile(FSSpec *specPtr);
-void TestEditFile(FSSpec *specPtr);
-void TestSpin(FSSpec *specPtr);
-void TestRefExtract(FSSpec *specPtr);
-void DumpBlock(Ptr p, short psize);
+void TestCreateFile(char *fname);
+void TestDumpFile(char *fname);
+void TestEditFile(char *fname);
+void TestSpin(char *fname);
+void TestRefExtract(char *fname);
+void DumpBlock(void* p, short psize);
 
 //----------------------------------------------------------------------------------
 //  Main routine.
@@ -55,10 +55,13 @@ void main()
 {
 	char				ans[10];
 	char				c;
-	StandardFileReply	reply;
-	SFTypeList			typeList;
+    char                fname[30];
+    int n;
+//	StandardFileReply	reply;
+//	SFTypeList			typeList;
 
-	typeList[0] = 'Sgam';
+//	typeList[0] = 'Sgam';
+    
 
 	ResInit();
 
@@ -69,29 +72,44 @@ LOOP:
 	switch (c)
 	{
 		case 'C':
-			StandardPutFile("\pCreate a resource file:", "\pTest Res File", &reply);
-			if (reply.sfGood)
-				TestCreateFile(&reply.sfFile);
+			//StandardPutFile("\pCreate a resource file:", "\pTest Res File", &reply);
+            printf("Create a resource files: ");
+            fgets(fname, 30, stdin);
+            n = strlen(fname);
+            fname[n-1] = 0;
+			TestCreateFile(fname);
 			break;
 		case 'D':
-			StandardGetFile(nil, 1, typeList, &reply);
-			if (reply.sfGood)
-				TestDumpFile(&reply.sfFile);
+//			StandardGetFile(nil, 1, typeList, &reply);
+//			if (reply.sfGood)
+            fgets(fname, 30, stdin);
+            n = strlen(fname);
+            fname[n-1] = 0;            
+			TestDumpFile(fname);
 			break;
 		case 'E':
-			StandardGetFile(nil, 1, typeList, &reply);
-			if (reply.sfGood)
-				TestEditFile(&reply.sfFile);
+//			StandardGetFile(nil, 1, typeList, &reply);
+//			if (reply.sfGood)
+            fgets(fname, 30, stdin);
+            n = strlen(fname);
+            fname[n-1] = 0;            
+			TestEditFile(fname);
 			break;
 		case 'R':
-			StandardGetFile(nil, 1, typeList, &reply);
-			if (reply.sfGood)
-				TestRefExtract(&reply.sfFile);
+//			StandardGetFile(nil, 1, typeList, &reply);
+//			if (reply.sfGood)
+            fgets(fname, 30, stdin);
+            n = strlen(fname);
+            fname[n-1] = 0;            
+			TestRefExtract(fname);
 			break;
 		case 'S':
-			StandardGetFile(nil, 1, typeList, &reply);
-			if (reply.sfGood)
-				TestSpin(&reply.sfFile);
+//			StandardGetFile(nil, 1, typeList, &reply);
+//			if (reply.sfGood)
+            fgets(fname, 30, stdin);
+            n = strlen(fname);
+            fname[n-1] = 0;            
+			TestSpin(fname);
 			break;
 		case 'Q':
 		case 27:
@@ -104,7 +122,7 @@ LOOP:
 //----------------------------------------------------------------------------------
 //  Create a test file, add some resources to it.
 //----------------------------------------------------------------------------------
-void TestCreateFile(FSSpec *specPtr)
+void TestCreateFile(char *fname)
 {
 static uchar data1[] = {0x10,0x11,0x12,0x13,0x14,0x15};
 static uchar data2[] = {
@@ -129,18 +147,18 @@ static uchar data4[] = {0x48,0x48,0x48,0x48};
 static uchar data5[] = {0x25,0x25,0x25,0x26,0x26,0x26};
 
 	short 	filenum;
-	Ptr		p;
+	void*	p;
 
-	filenum = ResCreateFile(specPtr);
+	filenum = ResCreateFile(fname);
 	printf("filenum = %d\n", filenum);
 
 	ResSetComment(filenum, "This is a test\nresource file\n");
 
-	p = NewPtr(sizeof(data1));
+	p = malloc(sizeof(data1));
 	memcpy(p, data1, sizeof(data1));
 	ResMake(0x100, p, sizeof(data1), RTYPE_UNKNOWN, filenum, 0);
 
-	p = NewPtr(sizeof(data2));
+	p = malloc(sizeof(data2));
 	memcpy(p, data2, sizeof(data2));
 	ResMake(0x101, p, sizeof(data2), RTYPE_UNKNOWN, filenum, RDF_LZW);
 	printf("resources added\n");
@@ -173,16 +191,16 @@ void TestDumpBlockDumper(void *buff, long numBytes, long iblock)
 //----------------------------------------------------------------------------------
 //  Dump the bytes in each resource.
 //----------------------------------------------------------------------------------
-void TestDumpFile(FSSpec *specPtr)
+void TestDumpFile(char *fname)
 {
 	int 	filenum;
 	Id 		id;
-	Ptr		p;
+	void*	p;
 	int 	i, rs;
 	ResDesc	*prd;
 
 	printf("opening file\n");
-	filenum = ResOpenFile(specPtr);
+	filenum = ResOpenFile(fname);
 	printf("filenum = %d\n", filenum);
 
 	for (id = ID_MIN; id <= resDescMax; id++)
@@ -192,11 +210,11 @@ void TestDumpFile(FSSpec *specPtr)
 		{
 			ResLock(id);
 			rs = ResSize(id);
-			p = NewPtr(rs);
+			p = malloc(rs);
 			ResExtract(id, p);
 			ResUnlock(id);
 			printf("Res $%x (size %d):\n", id, rs);
-			DumpBlock((Ptr)p, rs);
+			DumpBlock((void*)p, rs);
 		}
 	}
 
@@ -212,18 +230,18 @@ void TestDumpFile(FSSpec *specPtr)
 //----------------------------------------------------------------------------------
 //  Edit a res file (add and delete resources).
 //----------------------------------------------------------------------------------
-void TestEditFile(FSSpec *specPtr)
+void TestEditFile(char *fname)
 {
 	int		filenum;
 	char	ans[10];
 	int		c;
 	Id 		id;
-	Ptr 	buff;
+	void* 	buff;
 
-	filenum = ResEditFile(specPtr, TRUE);
+	filenum = ResEditFile(fname, TRUE);
 	if (filenum < 0)
 	{
-		printf("Error return: %d");
+		printf("Error return: %d", filenum);
 		return;
 	}
 	printf("File opened at filenum: %d\n", filenum);
@@ -240,7 +258,7 @@ LOOP:
 			fgets(ans, sizeof(ans), stdin);
 			c = atoi(ans);
 			id = 0x100 + c;
-			buff = NewPtr(16);
+			buff = malloc(16);
 			memset(buff, c, 16);
 			ResMake(id, buff, 13, 0, filenum, 0);
 			c = ResWrite(id);
@@ -266,14 +284,14 @@ LOOP:
 //----------------------------------------------------------------------------------
 //  Who know what this does?  At least it doesn't crash.
 //----------------------------------------------------------------------------------
-void TestSpin(FSSpec *specPtr)
+void TestSpin(char *fname)
 {
 	int filenum,i;
 	Id id;
 	uchar *p;
 
 	printf("opening file\n");
-	filenum = ResOpenFile(specPtr);
+	filenum = ResOpenFile(fname);
 	printf("filenum = %d\n", filenum);
 
 	for (i = 0; i < 1000; i++)
@@ -294,19 +312,20 @@ void TestSpin(FSSpec *specPtr)
 //----------------------------------------------------------------------------------
 //  Extract data from a resource using two different methods.
 //----------------------------------------------------------------------------------
-void TestRefExtract(FSSpec *specPtr)
+void TestRefExtract(char *fname)
 {
 	int		filenum;
 	char	ans[10];
 	int		c, rfs;
 	Ref		rid;
-	Ptr		p, cur;
+	void*	p;
+    void*   cur;
 	RefTable *rt;
 	
-	filenum = ResEditFile(specPtr, TRUE);
+	filenum = ResEditFile(fname, TRUE);
 	if (filenum < 0)
 	{
-		printf("Error return: %d");
+		printf("Error return: %d", filenum);
 		return;
 	}
 	printf("File opened at filenum: %d\n", filenum);
@@ -327,7 +346,7 @@ void TestRefExtract(FSSpec *specPtr)
 			fgets(ans, sizeof(ans), stdin);
 			c = atoi(ans);
 			rid = MKREF(0x102,c);
-			p = (Ptr)RefLock(rid);
+			p = (void*)RefLock(rid);
 			// Copy into your own buffer here.
 			RefUnlock(rid);
 			break;
@@ -340,13 +359,13 @@ void TestRefExtract(FSSpec *specPtr)
 			
    			rt = ResReadRefTable(REFID(rid));
    			rfs = RefSize(rt,REFINDEX(rid));
-   			p = NewPtrClear(rfs);
+   			p = calloc(1, rfs);
   			RefExtract(rt, rid, p);
    			ResFreeRefTable(rt);
 			
 			DumpBlock(p, rfs);
 
-			DisposePtr(p);
+			free(p);
 			break;
 	}
 	ResCloseFile(filenum);
@@ -355,15 +374,15 @@ void TestRefExtract(FSSpec *specPtr)
 //----------------------------------------------------------------------------------
 //  Dumps the contents of a pointer.
 //----------------------------------------------------------------------------------
-void DumpBlock(Ptr p, short psize)
+void DumpBlock(void* p, short psize)
 {
 	short 	c = 1;
-	Ptr		cur = p;
+	void*	cur = p;
 	uchar	ch;
 	
 	while ((cur - p) < psize)
 	{
-		ch = *cur;
+		ch = *(uchar*)cur;
 		printf("$%x ", ch);
 		c++;
 		cur++;

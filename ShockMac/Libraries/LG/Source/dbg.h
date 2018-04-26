@@ -118,13 +118,14 @@ void DoWarningMsg(char *msg);
 #else
 #define Warning(msg) do {} while (0)
 #endif
-*/
+
 #define Warning(msg) DoWarningMsg msg
 void DoWarningMsg(char *msg);
+*/
 
-/*
 #include <stdio.h>
-#include "types.h"
+//#include "types.h"
+#include "lg_types.h"
 
 //	The 4 levels of reporting
 
@@ -158,7 +159,7 @@ void DoWarningMsg(char *msg);
 #define DG_FUNC 2
 #define DG_FILE 3
 #define DG_NUM 4
-
+/*
 typedef struct {
 	ulong gate[DG_NUM];		// gates for: dbg, spew, warn, mono
 	uchar file_index[NUM_DBG_SLOTS];		// which log file for each slot
@@ -166,7 +167,7 @@ typedef struct {
 	char **ppBankSlotNames;	// ptr to bank slot names
 	char pad[8];				// padding
 } DbgBank;		// 64 bytes each
-
+*/
 #ifdef DBG_ON
 // this is here for C, and in ASM we have it hand coded into
 // the dbgmacro.inc, because h2inc is so cool
@@ -365,4 +366,3 @@ void PrintExitMsg();						// prints exit message
 
 #define SetExitMsg(str) pExitMsg=str
 extern char *pExitMsg;
-*/

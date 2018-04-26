@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Optimized memset, memcpy, and memmove routines, for 68K and PowerPC
 // MLA - 3/20/95
 
-#include "LG.h"
+#include <string.h>
+#include "lg.h"
 
 // some handy 68000 assembly defines
 #define blo	bcs		// branch low (unsigned <)
@@ -177,8 +178,11 @@ void *LG_memmove(void *dest, const void *source, unsigned int count)
 #else
 
 // 68K optimized versions of standard memory ops
-asm void *LG_memset(void *dest, int val, unsigned int count)
- {
+// it's 2018, it doesn't need to be asm
+/*asm*/ void *LG_memset(void *dest, int val, unsigned int count)
+{
+    memset(dest, val, count);
+/*
  	move.l	4(a7),a0		// get dest
  	move.l	8(a7),d0		// get val
  	move.l	12(a7),d1		// get count
@@ -266,10 +270,13 @@ asm void *LG_memset(void *dest, int val, unsigned int count)
 @Done:
 	move.l	4(a7),a0		// return address
 	rts 	
- }
+*/
+}
 
-asm void *LG_memcpy(void *dest, const void *source, unsigned int count)
- {
+/*asm*/ void *LG_memcpy(void *dest, const void *source, unsigned int count)
+{
+    memcpy(dest, source, count);
+/*
  	move.l	4(a7),a0		// get dest
  	move.l	8(a7),a1		// get src
  	move.l	12(a7),d1		// get count
@@ -353,10 +360,13 @@ asm void *LG_memcpy(void *dest, const void *source, unsigned int count)
 	move.l	(sp)+,a2
 	move.l	4(a7),a0		// return address
 	rts 	
- }
+*/
+}
  
-asm void *LG_memmove(void *dest, const void *source, unsigned int count)
- {
+/*asm*/ void *LG_memmove(void *dest, const void *source, unsigned int count)
+{
+    memmove(dest, source, count);
+/*
  	move.l	4(a7),a0		// get dest
  	move.l	8(a7),a1		// get src
  	move.l	12(a7),d1		// get count
@@ -523,6 +533,7 @@ asm void *LG_memmove(void *dest, const void *source, unsigned int count)
 	move.l	(sp)+,a2
 	move.l	4(a7),a0		// return address
 	rts 	
- }
+*/
+}
  
 #endif 
