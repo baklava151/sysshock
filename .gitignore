@@ -33,4 +33,5 @@
 
 ShockMac/Res/
 
-*.RES
+**/*.RES
+**/*.res

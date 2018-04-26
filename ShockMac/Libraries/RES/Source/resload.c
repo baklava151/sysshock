@@ -253,7 +253,8 @@ bool ResRetrieve(Id id, void *buffer)
 	//	Read in data
 
 	if (prd->flags & RDF_LZW)
-		LzwExpandFd2Buff(fd, p, 0, 0);
+		//LzwExpandFd2Buff(fd, p, 0, 0);
+        LzwExpandFp2Buff(fd, p, 0, 0);
 	else
 		//read(fd, p, size);
         fread(p, size, 1, fd);

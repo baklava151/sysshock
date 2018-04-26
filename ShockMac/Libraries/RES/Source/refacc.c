@@ -438,9 +438,12 @@ void *RefExtract(RefTable *prt, Ref ref, void *buff)
 
 	if (ResFlags(REFID(ref)) & RDF_LZW)
 		{
+            /*
 		LzwExpandFd2Buff(fd, buff,
 			offset - REFTABLESIZE(numrefs),	// skip amt
 			refsize);										// data amt
+            */
+            LzwExpandFp2Buff(fd, buff, offset - REFTABLESIZE(numrefs), refsize);
 		}
 	else
 		{
