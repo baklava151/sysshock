@@ -29,9 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------------------------
 //  Prototypes
 //--------------------------------------
-void TestListRes(short filenum);
-void TestExtractRefs(short filenum);
-void TestGetRefs(short filenum);
+void TestListRes(int filenum);
+void TestExtractRefs(int filenum);
+void TestGetRefs(int filenum);
 void main(void);
 void DumpBlock(/*Ptr*/char* p, short psize);
 
@@ -43,7 +43,7 @@ void main(void)
 {
 //	StandardFileReply	reply;
 //	SFTypeList				typeList;
-	short						filenum;
+	int						filenum;
 
 	ResInit();
 	
@@ -61,15 +61,15 @@ void main(void)
 	}
     */
 
-    filenum = ResOpenFile("./CYBSTRNG.RES");
+    filenum = ResOpenFile("./ARCHIVE.DAT");
 	printf("Opened file, filenum = %d\n", filenum);
 
 	printf("\nLoaded Resources...\n\n");
 	TestListRes(filenum);
-	
+/*	
 	printf("\nGetting refs...\n\n");
 	TestGetRefs(filenum);
-	
+*/	
 	printf("\nExtracting refs...\n\n");
 	TestExtractRefs(filenum);
 	
@@ -82,7 +82,7 @@ void main(void)
 //----------------------------------------------------------------------------------
 //  Dump the bytes in each resource.
 //----------------------------------------------------------------------------------
-void TestListRes(short filenum)
+void TestListRes(int filenum)
 {
 	Id 				id;
 	int 			i, rs;
@@ -95,9 +95,9 @@ void TestListRes(short filenum)
 		prd = RESDESC(id);
 		if (prd->filenum == filenum)
 		{
-//			ResLock(id);
+			ResLock(id);
 			rs = ResSize(id);
-//			ResUnlock(id);
+			ResUnlock(id);
 			printf("%6d    %4.4s   0x%08x    %6d   0x%04x\n",
             id, (char *)&resTypeNames[prd->type], prd->ptr, rs, prd->flags);
 		}
@@ -107,7 +107,7 @@ void TestListRes(short filenum)
 //----------------------------------------------------------------------------------
 //  Get and dump the references in the compound resource.
 //----------------------------------------------------------------------------------
-void TestGetRefs(short filenum)
+void TestGetRefs(int filenum)
 {
 	int		i;
 //	Ptr		p;
@@ -124,7 +124,7 @@ void TestGetRefs(short filenum)
 //----------------------------------------------------------------------------------
 //  Extract the references in the compound resource.
 //----------------------------------------------------------------------------------
-void TestExtractRefs(short filenum)
+void TestExtractRefs(int filenum)
 {
 	int		i, rfs;
 //	Ptr		p;

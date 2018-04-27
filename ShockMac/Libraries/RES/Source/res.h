@@ -123,7 +123,7 @@ void ResDelete(Id id);								// delete resource forever
 
 typedef struct {
 	RefIndex numRefs;									// # items in compound resource
-	long offset[256];										// offset to each item (numRefs + 1 of them)
+	long offset[1];										// offset to each item (numRefs + 1 of them)
 } RefTable;
 
 void *RefLock(Ref ref);								// lock compound res, get ptr to item

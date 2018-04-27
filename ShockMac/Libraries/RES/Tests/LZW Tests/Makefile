@@ -1,4 +1,4 @@
-OBJECTS := LzwLoadRes
+OBJECTS := lzwtest
 
 all: $(OBJECTS)
 

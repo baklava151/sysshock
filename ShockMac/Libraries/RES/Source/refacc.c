@@ -132,11 +132,14 @@ void *RefGet(Ref ref)
 	//	Get hold of ref
 
 	prd = RESDESC(REFID(ref));
-	if (ResLoadResource(REFID(ref)) == NULL)
+        if (prd->ptr == NULL)
+        {
+            if (ResLoadResource(REFID(ref)) == NULL)
 		return(NULL);
-//		ResAddToTail(prd);
-//	else if (prd->lock == 0)
-//		ResMoveToTail(prd);
+            ResAddToTail(prd);
+        }
+	else if (prd->lock == 0)
+            ResMoveToTail(prd);
 
 	//	Index into ref table
 
