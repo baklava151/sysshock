@@ -45,18 +45,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 
 //
 
-#include "ICanvas.h"
+#include "icanvas.h"
 #include "chain.h"
 #include "chnfuncs.h"
 
 
 // globals
 grs_func_chain 	*gr_current_chain;
-short						funcnum;
-Ptr							firstfunc;
+short funcnum;
+void* firstfunc;
 
-Ptr							chain_stack[256];
-Ptr							chain_stack_ptr;
+void* chain_stack[256];
+void* chain_stack_ptr;
 
 void 						(**chn_primitives[GRD_CANVAS_FUNCS])();
 int 						gr_current_primitive = GRD_CANVAS_FUNCS;

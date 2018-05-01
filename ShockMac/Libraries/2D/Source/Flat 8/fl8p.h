@@ -85,11 +85,11 @@ extern fix fix_mul_16_32_20 (fix a, fix b);
 #define fix_mul_16_32_20 fix_mul_16_32_20_asm
 
 #else
-extern asm fix fix_div_16_16_3 (fix a, fix b);
-extern asm fix fix_mul_3_3_3 (fix a, fix b);
-extern asm fix fix_mul_3_32_16 (fix a, fix b);
-extern asm fix fix_mul_3_16_20 (fix a, fix b);
-extern asm fix fix_mul_16_32_20 (fix a, fix b);
+extern fix fix_div_16_16_3 (fix a, fix b);
+extern fix fix_mul_3_3_3 (fix a, fix b);
+extern fix fix_mul_3_32_16 (fix a, fix b);
+extern fix fix_mul_3_16_20 (fix a, fix b);
+extern fix fix_mul_16_32_20 (fix a, fix b);
 
 #endif
 

@@ -39,8 +39,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "grmalloc.h"
 #include "lintab.h"
 #include "tabdat.h"
-#include "valloc.h"
+//#include "valloc.h"
 #include "canvas.h"
+#include "memall.h"
+#include "valloc.h"
 
 #define CANVAS_STACKSIZE 16
 grs_canvas *grd_canvas_stack[CANVAS_STACKSIZE];
@@ -138,12 +140,12 @@ grs_canvas *gr_alloc_canvas (int type, short w, short h)
    grs_canvas *c;
    uchar *p;
 
-   if ((c=(grs_canvas *)NewPtr (sizeof (*c))) == NULL)	// was Malloc
+   if ((c=(grs_canvas *)gr_malloc (sizeof (*c))) == NULL)	// was Malloc
       return NULL;
    if (type == BMT_DEVICE)
-      p = valloc (w,h);
+      p = nvalloc (w,h);
    else
-      p = (uchar *)NewPtr (w*h);// was Malloc
+      p = (uchar *)gr_malloc (w*h);// was Malloc
    gr_init_canvas (c, p, type, w, h);
 
    return c;
@@ -154,8 +156,8 @@ void gr_free_canvas (grs_canvas *c)
    if (c->bm.type == BMT_DEVICE)
       vfree (c->bm.bits);
    else
-      DisposePtr ((Ptr) c->bm.bits);	// was gr_free
-   DisposePtr ((Ptr) c);	// was gr_free
+      gr_free (c->bm.bits);	// was gr_free
+   gr_free (c);	// was gr_free
 }
 
 grs_canvas *gr_alloc_sub_canvas (grs_canvas *c, short x, short y,
@@ -163,7 +165,7 @@ grs_canvas *gr_alloc_sub_canvas (grs_canvas *c, short x, short y,
 {
    grs_canvas *c_new;
 
-   c_new = (grs_canvas *)NewPtr (sizeof (*c_new));// was Malloc
+   c_new = (grs_canvas *)gr_malloc (sizeof (*c_new));// was Malloc
    if (c_new != NULL)
       gr_init_sub_canvas (c, c_new, x, y, w, h);
    return c_new;
@@ -171,5 +173,5 @@ grs_canvas *gr_alloc_sub_canvas (grs_canvas *c, short x, short y,
 
 void gr_free_sub_canvas (grs_canvas *c)
 {
-   DisposePtr ((Ptr) c);	// was gr_free
+    gr_free(c);	// was gr_free
 }

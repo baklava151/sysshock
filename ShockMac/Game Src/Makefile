@@ -1,4 +1,4 @@
-OBJECTS :=
+OBJECTS := ai.o
 
 all: $(OBJECTS)
 

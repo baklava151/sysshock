@@ -17,26 +17,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
 /*
- * $Source: n:/project/lib/src/2d/RCS/valloc.h $
- * $Revision: 1.2 $
- * $Author: kaboom $
- * $Date: 1993/05/03 14:01:59 $
+ * $Source: n:/project/lib/src/2d/RCS/invtab.c $
+ * $Revision: 1.1 $
+ * $Author: kevin $
+ * $Date: 1994/05/15 17:35:27 $
  *
- * Declarations for video memory manager.
+ * Fixed point inverse table.
  *
  * This file is part of the 2d library.
  *
- * $Log: valloc.h $
- * Revision 1.2  1993/05/03  14:01:59  kaboom
- * Added declaration for grd_valloc_mode.
- * 
- * Revision 1.1  1993/02/22  20:35:27  kaboom
- * Initial revision
  */
 
-#ifndef __VALLOC_H
-#define __VALLOC_H
-extern uchar grd_valloc_mode;
-extern uchar *valloc (short w, short h);
-extern void vfree (uchar *p);
-#endif /* !__VALLOC_H */
+#include "fix.h"
+#include "invtab.h"
+
+fix inverse_table[1024];
+
+void init_inverse_table(void)
+{
+   int i;
+
+   inverse_table[0]=FIX_MAX;
+   for (i=1; i<1024; i++)
+      inverse_table[i]=FIX_UNIT/i;
+}
+
