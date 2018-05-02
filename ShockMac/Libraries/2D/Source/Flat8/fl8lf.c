@@ -36,12 +36,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vtab.h"
 #include "fl8tf.h"
 #include "cnvdat.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 #include "fl8tmapdv.h"
 
 int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli);
 
 // 68K stuff
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Floor_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 														 		 grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
@@ -56,13 +57,13 @@ asm void floor_lit_trans_log2(void);
 ulong	f_l_wlog_68K;
 ulong	f_l_mask_68K;
 uchar	*f_l_ltab;
-
-extern "C"
-{
+*/
+//extern "C"
+//{
 extern int HandleFloorLoop_PPC(grs_tmap_loop_info *tli,
 															 fix u, fix v, fix du, fix dv, fix dx, fix i, fix di,
 													 		 uchar t_wlog, ulong	t_mask, uchar *t_bits, uchar *g_ltab);
-}
+//}
 /*
 int HandleFloorLoop_C(grs_tmap_loop_info *tli,
 										  fix u, fix v, fix du, fix dv, fix dx, fix i, fix di,
@@ -184,15 +185,15 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
 
 	dx=tli->right.x-tli->left.x;
 	
-	f_l_mask_68K = t_mask = tli->mask;
-	f_l_wlog_68K = t_wlog = tli->bm.wlog;
-	f_l_ltab = g_ltab = grd_screen->ltab;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
+	g_ltab = grd_screen->ltab;
 	
 	t_vtab = tli->vtab;
 	t_bits = tli->bm.bits;
    
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	if (tli->bm.hlog==(GRL_OPAQUE|GRL_LOG2))
 	  return HandleFloorLoop_PPC(tli, u, v, du, dv, dx, i, di, t_wlog, t_mask, t_bits, g_ltab);
 
@@ -284,11 +285,11 @@ int gri_lit_floor_umap_loop(grs_tmap_loop_info *tli) {
    return FALSE; /* tmap OK */
 
 // handle 68K loops
-#else
-	return(Handle_Floor_Lit_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,grd_bm.row, i, di));
-#endif
+//#else
+//	return(Handle_Floor_Lit_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,grd_bm.row, i, di));
+//#endif
 }
-
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Floor_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -484,11 +485,11 @@ asm int Handle_Floor_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 // handle inner loop for floor lit opaque (log2) mode
 asm void floor_lit_opaque_log2(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *(p_dest++) = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
      u+=du; v+=dv; i+=di;
-  }*/
+  }
   
 	move.l	f_l_mask_68K,d2
 	move.l	f_l_wlog_68K,d3
@@ -528,11 +529,11 @@ asm void floor_lit_opaque_log2(void)
 // handle inner loop for floor lit transparent (log2) mode
 asm void floor_lit_trans_log2(void)
  {
- /* for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (k=t_bits[k]) *p_dest = g_ltab[k+fix_light(i)];		// gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
      p_dest++; u+=du; v+=dv; i+=di;
-  }*/
+  }
   
 	move.l	f_l_mask_68K,d2
 	move.l	f_l_wlog_68K,d3
@@ -577,7 +578,7 @@ asm void floor_lit_trans_log2(void)
 	rts	   
  }
 #endif
-
+*/
 
 void gri_trans_lit_floor_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&

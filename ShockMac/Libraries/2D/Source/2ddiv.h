@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
+/*
 #if !(defined(powerc) || defined(__powerc))	
 
 // This file contains a nasty macro define that is used to simulate the
@@ -39,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	dc.w		0x6A02;					\
 	neg.l		d0;							
 		
-/*
+
 // this macro does a divs.l d2,d1:d0, with the fix_div setup for reg and zero checking
 #define fix_div_68k_d2(reg) \
 	tst.l		d2;							\
@@ -56,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	tst.l		reg;						\
 	dc.w		0x6A02;					\
 	neg.l		d0;							
-*/
+
 
 // this macro does a divs.l d2,d1:d0, with the fix_div setup for reg and zero checking
 #define fix_div_68k_d2_d0(tempreg) \
@@ -82,3 +83,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	move.l	d0,tempreg;
 
 #endif
+*/

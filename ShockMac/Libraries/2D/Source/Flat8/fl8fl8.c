@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "flat8.h"
 #include "lg.h"
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
 {
 	uchar 	*m_src;
@@ -87,7 +87,7 @@ void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
 		 m_dst += grow;
 		}
 }
-
+/*
 #else
 // 68k version
 asm void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
@@ -355,3 +355,4 @@ asm void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y)
  	rts
  }
 #endif
+*/

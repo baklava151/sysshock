@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
 */
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 
 #ifdef __cplusplus
 extern "C"
@@ -26,13 +26,13 @@ extern fix fix_mul_asm_safe(fix a, fix b);
 #ifdef __cplusplus
 }
 #endif
-
+/*
 #else
 
 extern asm fix fix_mul_asm_safe(fix a, fix b);
 
 #endif
-
+*/
 // InvDIv = 0 to use divs in mappers, !=0 to use inverse multiplies
 #define InvDiv 1
 

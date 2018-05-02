@@ -38,7 +38,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm);
 void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm);
 void gri_trans_clut_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 void gri_trans_clut_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 asm void trans_clut_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix *l_v, uchar **p, fix *l_y_fix, int *y_cint);
@@ -51,7 +51,7 @@ fix 	tc_l_scan_slope;
 int		tc_gr_row;
 
 #endif
-
+*/
 
 void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
    register int k,y_cint;
@@ -131,7 +131,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
    
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    for (;l_x<l_xr0;l_x++) {
       k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
@@ -145,6 +145,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       l_u+=l_du;
       l_v+=l_dv;
    }
+   /*
 #else
 	if (l_x<l_xr0)
 	 {
@@ -159,7 +160,7 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 		l_x=l_xr0;
 	 }
 #endif
-   
+   */
    if (l_x<l_xr) {
       fix test=l_x*l_dyr-y_cint*pi->dxr+pi->cr;
    		p=grd_bm.bits+l_x+y_cint*grd_bm.row;
@@ -190,11 +191,11 @@ void gri_trans_clut_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->du = l_du;
 	pi->dv = l_dv;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void trans_clut_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix *l_v, uchar **p, fix *l_y_fix, int *y_cint)
  { 
-/*   for (;l_x<l_xr0;l_x++) {
+   for (;l_x<l_xr0;l_x++) {
       k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
   	  if (temp_pix = bm_bits[k]) *p=t_clut[temp_pix];		// gr_fill_upixel(t_clut[bm_bits[k]],l_x,y_cint);
@@ -210,7 +211,7 @@ asm void trans_clut_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix
        }
       l_u+=l_du;
       l_v+=l_dv;
-   }*/
+   }
 
   movem.l	d0-d7/a0-a6,-(sp)    
 	
@@ -295,7 +296,7 @@ asm void trans_clut_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix
 	rts
  }
 #endif
-
+*/
 
 void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
    register int k,x_cint;
@@ -375,7 +376,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
    
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    for (;l_y<l_yr0;l_y++) {
       k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
@@ -390,6 +391,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       l_u+=l_du;
       l_v+=l_dv;
    }
+   /*
 #else
 	if (l_y<l_yr0)
 	 {
@@ -404,7 +406,7 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	 	l_y  = l_yr0;
 	 }
 #endif
-   
+   */
    if (l_y<l_yr) {
       fix test=l_y*l_dxr-x_cint*l_dyr+pi->cr;
    		p=grd_bm.bits+x_cint+l_y*gr_row;
@@ -438,11 +440,11 @@ void gri_trans_clut_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->du = l_du;
 	pi->dv = l_dv;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void trans_clut_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix *l_v, uchar **p, fix *l_x_fix, int *x_cint)
  {
-/*    for (;l_y<l_yr0;l_y++) {
+    for (;l_y<l_yr0;l_y++) {
       k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
       if (temp_pix=bm_bits[k]) *p=t_clut[temp_pix];		// gr_fill_upixel(t_clut[bm_bits[k]],x_cint,l_y);
@@ -455,7 +457,7 @@ asm void trans_clut_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix
       p+=gr_row;
       l_u+=l_du;
       l_v+=l_dv;
-*/
+
   movem.l	d0-d7/a0-a6,-(sp)    
 
 	move.l	64(sp),d0		// dy
@@ -522,7 +524,7 @@ asm void trans_clut_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix
 	rts
  }
 #endif
-
+*/
 
 extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);

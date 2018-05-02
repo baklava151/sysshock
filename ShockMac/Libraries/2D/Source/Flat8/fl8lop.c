@@ -41,7 +41,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm);
 void gri_opaque_lit_per_umap_hscan_init(grs_bitmap *bm, grs_per_setup *ps);
 void gri_opaque_lit_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps);
 
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 asm void opaque_lit_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix *l_v,
@@ -56,14 +56,14 @@ fix 	ol_l_scan_slope;
 int		ol_gr_row;
 uchar *ol_ltab;
 #endif
-
-extern "C"
-{
+*/
+//extern "C"
+//{
 void opaque_lit_per_hscan_Loop_PPC(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																	 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
 																	 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
 		 														 	 uchar *bm_bits, int gr_row, uchar *ltab);
-}
+//}
 /*
 void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
@@ -109,11 +109,11 @@ void opaque_lit_per_hscan_Loop_C(int dx, fix l_du, fix l_dv, fix *pl_u, fix *pl_
 
 
 void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
-   register uchar *ltab=grd_screen->ltab;
-   register int 	l_x,y_cint,l_u_mask,l_v_mask,l_v_shift;
-   register fix 	k,l_u,l_v,l_du,l_dv,l_i,l_di,l_y_fix,l_scan_slope;
-	 register int		gr_row;
-   register uchar *bm_bits,*p;
+   uchar *ltab=grd_screen->ltab;
+   int 	l_x,y_cint,l_u_mask,l_v_mask,l_v_shift;
+   fix 	k,l_u,l_v,l_du,l_dv,l_i,l_di,l_y_fix,l_scan_slope;
+   int		gr_row;
+   uchar *bm_bits,*p;
 
 	 // locals used to speed PPC code
 	 fix	test,l_dtl,l_dxl,l_dyl,l_dtr,l_dyr;
@@ -188,7 +188,7 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	if (l_x<l_xr0)
 	{
 	 opaque_lit_per_hscan_Loop_PPC(l_xr0-l_x, l_du, l_dv, 
@@ -198,6 +198,7 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 		 														 bm_bits, gr_row, ltab);	
    l_x=l_xr0;
 	}  
+/*
 #else
 	if (l_x<l_xr0)
 	 {
@@ -213,7 +214,7 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 		l_x=l_xr0;
 	 }
 #endif
-    
+*/    
    
    if (l_x<l_xr) {
       test=l_x*l_dyr-y_cint*pi->dxr+pi->cr;
@@ -249,12 +250,12 @@ void gri_opaque_lit_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->di = l_di;
 	pi->i = l_i;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void opaque_lit_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix *l_v, 
 																			 uchar **p, fix *l_y_fix, int *y_cint, fix l_di, fix *l_i)
  { 
-/*   for (;l_x<l_xr0;l_x++) {
+   for (;l_x<l_xr0;l_x++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
       k=bm_bits[k];
@@ -274,7 +275,7 @@ asm void opaque_lit_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix
       l_v+=l_dv;
       l_i+=l_di;
    }
-*/
+
 
   movem.l	d0-d7/a0-a6,-(sp)    
 	
@@ -363,15 +364,15 @@ asm void opaque_lit_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix
 	rts
  }
 #endif
+*/
 
-
-extern "C"
-{
+//extern "C"
+//{
 void opaque_lit_per_vscan_Loop_PPC(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																	 uchar **pp, fix *pl_y_fix, int *py_cint, fix l_di, fix *pl_i,
 																	 int l_u_mask, int l_v_shift, int l_v_mask, fix l_scan_slope,
 		 														 	 uchar *bm_bits, int gr_row, uchar *ltab);
-}
+//}
 /*
 void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_v,
 																 uchar **pp, fix *pl_x_fix, int *px_cint, fix l_di, fix *pl_i,
@@ -417,7 +418,7 @@ void opaque_lit_per_vscan_Loop_C(int dy, fix l_du, fix l_dv, fix *pl_u, fix *pl_
 */
 
 void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
-	 register int 	 k,x_cint;
+	 int 	 k,x_cint;
    register uchar *ltab=grd_screen->ltab;
    
 	 // locals used to speed PPC code
@@ -500,7 +501,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	if (l_y<l_yr0)
 	 {
 		 opaque_lit_per_vscan_Loop_PPC(l_yr0-l_y, l_du, l_dv, 
@@ -510,6 +511,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 			 														 bm_bits, gr_row, ltab);	
 	   l_y=l_yr0;
    }
+/*
  #else
 	if (l_y<l_yr0)
 	 {
@@ -524,7 +526,7 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	 	l_y = l_yr0;
 	 }
 #endif
-  
+*/  
    if (l_y<l_yr) {
       fix test=l_y*l_dxr-x_cint*l_dyr+pi->cr;
    		p=grd_bm.bits+x_cint+l_y*gr_row;
@@ -564,12 +566,12 @@ void gri_opaque_lit_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->di = l_di;
 	pi->i = l_i;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void opaque_lit_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix *l_v,
 																			 uchar **p, fix *l_x_fix, int *x_cint, fix l_di, fix *l_i)
  {
-/*
+
    for (;l_y<l_yr0;l_y++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
@@ -586,7 +588,7 @@ asm void opaque_lit_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix
       l_v+=l_dv;
       l_i+=l_di;
    }
-*/
+
   movem.l	d0-d7/a0-a6,-(sp)    
 
 	move.l	64(sp),d0		// dy
@@ -658,7 +660,7 @@ asm void opaque_lit_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix
 	rts
  }
 #endif
-
+*/
 
 extern void gri_lit_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 extern void gri_lit_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);

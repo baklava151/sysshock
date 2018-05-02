@@ -36,12 +36,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vtab.h"
 #include "fl8tf.h"
 #include "cnvdat.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 #include "fl8tmapdv.h"
 
 int gri_lit_wall_umap_loop(grs_tmap_loop_info *tli);
 int gri_lit_wall_umap_loop_1D(grs_tmap_loop_info *tli);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Wall_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
@@ -61,7 +61,7 @@ asm void wall_lit_trans_log2(void);
 ulong	w_l_wlog_68K;
 ulong	w_l_mask_68K;
 uchar	*w_l_ltab;
-
+*/
 int gri_lit_wall_umap_loop(grs_tmap_loop_info *tli) {
    fix u,v,i,du,dv,di,dy,d;
 
@@ -97,15 +97,15 @@ int gri_lit_wall_umap_loop(grs_tmap_loop_info *tli) {
 
    dy=tli->right.y-tli->left.y;
 
-	 w_l_mask_68K = t_mask = tli->mask;
-	 w_l_wlog_68K = t_wlog = tli->bm.wlog;
-   w_l_ltab = g_ltab = grd_screen->ltab;
+	 t_mask = tli->mask;
+	 t_wlog = tli->bm.wlog;
+         g_ltab = grd_screen->ltab;
 	 t_vtab = tli->vtab;
 	 t_bits = tli->bm.bits;
 	 gr_row = grd_bm.row;
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    do {      
       if ((d = fix_ceil(tli->right.y)-fix_ceil(tli->left.y)) > 0) {
       	 d =fix_ceil(tli->left.y)-tli->left.y;
@@ -210,11 +210,11 @@ int gri_lit_wall_umap_loop(grs_tmap_loop_info *tli) {
    return FALSE; /* tmap OK */
 
 // handle 68K loops
-#else
-	 return(Handle_Wall_Lit_68K_Loop(u,v,du,dv,dy,tli,grd_bm.bits,t_bits,gr_row, i, di)); 
-#endif
+//#else
+//	 return(Handle_Wall_Lit_68K_Loop(u,v,du,dv,dy,tli,grd_bm.bits,t_bits,gr_row, i, di)); 
+//#endif
 }
-
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Wall_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
@@ -417,11 +417,11 @@ asm int Handle_Wall_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
 // handle inner loop for lit opaque (log2) wall mode
 asm void wall_lit_opaque_log2(void)
  {
-/*  for (y=t_yl; y<t_yr; y++) {
+  for (y=t_yl; y<t_yr; y++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *p_dest = g_ltab[t_bits[k]+fix_light(i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],t_x,y);
      p_dest += gr_row;	u+=du; v+=dv; i+=di;
-  }*/
+  }
 
 	move.l	a0,-(sp)
 	move.l	d1,a0
@@ -464,11 +464,11 @@ asm void wall_lit_opaque_log2(void)
 // handle inner loop for lit transparent (log2) wall mode
 asm void wall_lit_trans_log2(void)
  {
-/*  for (y=t_yl; y<t_yr; y++) {
+  for (y=t_yl; y<t_yr; y++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (k=t_bits[k]) *p_dest = g_ltab[t_bits[k]+fix_light(i)];	// gr_fill_upixel(g_ltab[k+fix_light(i)],t_x,y);
      p_dest += gr_row;	u+=du; v+=dv; i+=di;
-  }*/
+  }
 
 	move.l	a0,-(sp)
 	move.l	d1,a0
@@ -511,7 +511,7 @@ asm void wall_lit_trans_log2(void)
 	rts	   
  }
 #endif
-
+*/
 
 void gri_trans_lit_wall_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&
@@ -541,13 +541,13 @@ void gri_opaque_lit_wall_umap_init(grs_tmap_loop_info *tli) {
    tli->right_edge_func=(void (*)()) gri_uviwy_edge;
 }
 
-extern "C"
-{
+//extern "C"
+//{
 extern int HandleWallLitLoop1D_PPC(grs_tmap_loop_info *tli,
 																		fix u, fix v, fix i, fix dv, fix di, fix dy,
 																		uchar *g_ltab, long *t_vtab, uchar *o_bits,
 																		long gr_row, ulong t_mask, ulong t_wlog);
-}
+//}
 /*
 int HandleWallLitLoop1D_C(grs_tmap_loop_info *tli,
 													fix u, fix v, fix i, fix dv, fix di, fix dy,
@@ -664,22 +664,22 @@ int gri_lit_wall_umap_loop_1D(grs_tmap_loop_info *tli) {
 
    dy=tli->right.y-tli->left.y;
 
-	 w_l_mask_68K = t_mask = tli->mask;
-	 w_l_wlog_68K = t_wlog = tli->bm.wlog;
-   w_l_ltab = g_ltab = grd_screen->ltab;
+	 t_mask = tli->mask;
+	 t_wlog = tli->bm.wlog;
+     g_ltab = grd_screen->ltab;
 	 o_bits = tli->bm.bits;
 	 gr_row = grd_bm.row;
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	 
+//#if (defined(powerc) || defined(__powerc))	 
 	return HandleWallLitLoop1D_PPC(tli, u, v, i, dv, di, dy, g_ltab, NULL, o_bits,
 													 			 gr_row, t_mask, t_wlog);
 // handle 68K loops
-#else
-	return(Handle_Wall_Lit_68K_Loop_1D(u,v,dv,dy,tli,grd_bm.bits,o_bits,gr_row, i, di));
-#endif
+//#else
+//	return(Handle_Wall_Lit_68K_Loop_1D(u,v,dv,dy,tli,grd_bm.bits,o_bits,gr_row, i, di));
+//#endif
 }
-
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Wall_Lit_68K_Loop_1D(fix u, fix v, fix dv, fix dy,
@@ -783,11 +783,11 @@ asm int Handle_Wall_Lit_68K_Loop_1D(fix u, fix v, fix dv, fix dy,
 	move.l	100(sp),a3
 	
 // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-/*  for (y=t_yl; y<t_yr; y++) {
+  for (y=t_yl; y<t_yr; y++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *p_dest = g_ltab[t_bits[k]+fix_light(i)]; // gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],t_x,y);
      p_dest += gr_row;	u+=du; v+=dv; i+=di;
-  }*/
+  }
 
 	move.l	a0,-(sp)
 	move.l	d1,a0
@@ -897,7 +897,7 @@ asm int Handle_Wall_Lit_68K_Loop_1D(fix u, fix v, fix dv, fix dy,
   rts
  }
 #endif
-
+*/
 
 
 void gri_opaque_lit_wall1d_umap_init(grs_tmap_loop_info *tli)

@@ -36,11 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vtab.h"
 #include "fl8tf.h"
 #include "cnvdat.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 #include "fl8tmapdv.h"
 
 int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -62,11 +62,11 @@ long	*l_l_vtab_68K;
 ulong	l_l_wlog_68K;
 ulong	l_l_mask_68K;
 uchar	*l_l_ltab;
-
+*/
 
 // PPC specific optimized routines
-extern "C"
-{
+//extern "C"
+//{
 int Handle_Lit_Lin_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 														grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
 														fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
@@ -74,7 +74,7 @@ int Handle_Lit_Lin_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 int Handle_TLit_Lin_Loop2_PPC(fix u, fix v, fix du, fix dv, fix dx,
 															grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row,
 															fix i, fix di, uchar *g_ltab, uchar	t_wlog, ulong	t_mask);
-}
+//}
 /*
 
 int Handle_Lit_Lin_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
@@ -225,17 +225,17 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
 	di=tli->right.i-i;
 	dx=tli->right.x-tli->left.x;
 
-	l_l_vtab_68K = t_vtab = tli->vtab;
-	l_l_mask_68K = t_mask = tli->mask;
-	l_l_wlog_68K = t_wlog = tli->bm.wlog;
-  l_l_ltab = g_ltab = grd_screen->ltab;
+	t_vtab = tli->vtab;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
+        g_ltab = grd_screen->ltab;
 
 	t_bits = tli->bm.bits;
 	gr_row = grd_bm.row;
 	start_pdest = grd_bm.bits + (gr_row*(tli->y));
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	// handle optimized cases first
 	if (tli->bm.hlog == (GRL_OPAQUE|GRL_LOG2))
 		return(Handle_Lit_Lin_Loop_PPC(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di,g_ltab,t_wlog,t_mask));
@@ -321,11 +321,11 @@ int gri_lit_lin_umap_loop(grs_tmap_loop_info *tli) {
    return FALSE; /* tmap OK */
 
 // handle 68K loops
-#else
-	return(Handle_Lit_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di));
-#endif
+//#else
+//	return(Handle_Lit_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,i,di));
+//#endif
 }
-
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -521,11 +521,11 @@ asm int Handle_Lit_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 // handle inner loop for lit opaque (non log2) mode
 asm void lin_lit_opaque(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      *(p_dest++) = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
      u+=du; v+=dv; i+=di;
-  }*/
+  }
 
 	move.l	l_l_ltab,a1
 	move.l	l_l_vtab_68K,a6
@@ -557,11 +557,11 @@ asm void lin_lit_opaque(void)
 
 asm void lin_lit_opaque_log2(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *(p_dest++) = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[t_bits[k]+fix_light(i)],x,t_y);
      u+=du; v+=dv; i+=di;
-  }*/
+  }
   
 	move.l	l_l_mask_68K,d2
 	move.l	l_l_wlog_68K,d3
@@ -599,11 +599,11 @@ asm void lin_lit_opaque_log2(void)
 // handle inner loop for lit transparent (non log2) mode
 asm void lin_lit_trans(void)
  {
-/**  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      if (k=t_bits[k]) *p_dest = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
      p_dest++; u+=du; v+=dv; i+=di;
-  }*/
+  }
 
 	move.l	l_l_ltab,a1
 	move.l	l_l_vtab_68K,a6
@@ -648,11 +648,11 @@ asm void lin_lit_trans(void)
 // handle inner loop for lit transparent (width log2) mode
 asm void lin_lit_trans_log2(void)
  {
-/* for (x=t_xl; x<t_xr; x++) {
+for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (k=t_bits[k]) *p_dest = g_ltab[t_bits[k]+fix_light(i)];		// gr_fill_upixel(g_ltab[k+fix_light(i)],x,t_y);
      p_dest++; u+=du; v+=dv; i+=di;
-  }*/
+  }
     
 	move.l	l_l_mask_68K,d2
 	move.l	l_l_wlog_68K,d3
@@ -698,7 +698,7 @@ asm void lin_lit_trans_log2(void)
  }
  
 #endif
-
+*/
 
 void gri_trans_lit_lin_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&

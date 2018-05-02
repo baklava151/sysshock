@@ -35,12 +35,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vtab.h"
 #include "fl8tf.h"
 #include "cnvdat.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 #include "fl8tmapdv.h"
 
 // prototypes
 int gri_lin_umap_loop(grs_tmap_loop_info *tli);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 // main loop routine
@@ -67,13 +67,13 @@ long	*l_vtab_68K;
 uchar *l_clut_68K;
 ulong	l_wlog_68K;
 ulong	l_mask_68K;
-
-extern "C"
-{
+*/
+//extern "C"
+//{
 int Handle_LinClut_Loop_PPC(fix u, fix v, fix du, fix dv, fix dx,
 														grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut,
 														uchar	t_wlog, ulong t_mask);
-}
+//}
 /*
 int Handle_LinClut_Loop_C(fix u, fix v, fix du, fix dv, fix dx,
 													grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row, uchar *t_clut,
@@ -151,17 +151,17 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	dv=tli->right.v-v;
 	dx=tli->right.x-tli->left.x;
 
-	l_vtab_68K = t_vtab = tli->vtab;
-	l_clut_68K = t_clut = tli->clut;
-	l_mask_68K = t_mask = tli->mask;
-	l_wlog_68K = t_wlog = tli->bm.wlog;
+	t_vtab = tli->vtab;
+	t_clut = tli->clut;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
 
 	t_bits = tli->bm.bits;
 	gr_row = grd_bm.row;
 	start_pdest = grd_bm.bits + (gr_row*(tli->y));
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	if (tli->bm.hlog == (GRL_OPAQUE|GRL_LOG2|GRL_CLUT))
 		return(Handle_LinClut_Loop_PPC(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row,t_clut,t_wlog,t_mask));
 
@@ -261,11 +261,11 @@ int gri_lin_umap_loop(grs_tmap_loop_info *tli) {
 	return FALSE; /* tmap OK */
 
 // handle 68K loops
-#else
-	return(Handle_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row));
-#endif
+//#else
+//	return(Handle_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row));
+//#endif
 }
- 
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -428,12 +428,12 @@ asm int Handle_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 // handle inner loop for opaque (non log2) mode
 asm void lin_opaque(void)
  {
-/*
+
   for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      *(p_dest++) = t_bits[k];		// gr_fill_upixel(t_bits[k],x,y);
      u+=du; v+=dv;
-  }*/
+  }
 
 	move.l	l_vtab_68K,a6
 	move.l	d7,d3
@@ -460,12 +460,12 @@ asm void lin_opaque(void)
 // handle inner loop for opaque (width log2) mode
 asm void lin_opaque_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *(p_dest++) = t_bits[k];		// gr_fill_upixel(t_bits[k],x,y);
      u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	l_mask_68K,d2
 	move.l	l_wlog_68K,d3
@@ -494,11 +494,11 @@ asm void lin_opaque_log2(void)
 // handle inner loop for opaque clut (non log2) mode
 asm void lin_opaque_clut(void)
  {
- /* for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,y);
      u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	l_vtab_68K,a6
 	move.l	l_clut_68K,a1
@@ -530,12 +530,12 @@ asm void lin_opaque_clut(void)
 // handle inner loop for opaque clut (width log2) mode
 asm void lin_opaque_clut_log2(void)
  {
-/*
+
 	for (x=t_xl; x<t_xr; x++) {
 	   int k=t_vtab[fix_fint(v)]+fix_fint(u);
 	   *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,y);
 	   u+=du; v+=dv;
-	}*/
+	}
 	
 	move.l	l_clut_68K,a1
 	move.l	l_mask_68K,d2
@@ -570,11 +570,11 @@ asm void lin_opaque_clut_log2(void)
 // handle inner loop for transparent (non log2) mode
 asm void lin_trans(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	l_vtab_68K,a6
 	move.l	d7,d3
@@ -613,12 +613,12 @@ asm void lin_trans(void)
 // handle inner loop for transparent (width log2) mode
 asm void lin_trans_log2(void)
  {
-/* 
+
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	l_mask_68K,d2
 	move.l	l_wlog_68K,d3
@@ -659,11 +659,11 @@ asm void lin_trans_log2(void)
 // handle inner loop for transparent clut (width log2) mode
 asm void lin_trans_clut(void)
  {
-/* for (x=t_xl; x<t_xr; x++) {
+ for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,y);
      p_dest++; u+=du; v+=dv;
-    } */
+    }
 	move.l	l_vtab_68K,a6
 	move.l	l_clut_68K,a2
 	move.l	d7,d3
@@ -703,12 +703,12 @@ asm void lin_trans_clut(void)
 // handle inner loop for transparent clut (width log2) mode
 asm void lin_trans_clut_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	l_mask_68K,d2
 	move.l	l_wlog_68K,d3
@@ -747,7 +747,7 @@ asm void lin_trans_clut_log2(void)
 	rts	   
  }
 #endif
-
+*/
 void gri_trans_lin_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&
             (tli->bm.h==(1<<tli->bm.hlog))) {

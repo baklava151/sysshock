@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg.h"
 
 /* clear a flat8 canvas. */
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 void flat8_clear (long color)
 {
    uchar 	*p;
@@ -108,6 +108,7 @@ void flat8_clear (long color)
     p += row;
    }
 }
+/*
 #else
 // 68k version
 asm void flat8_clear (long color)
@@ -328,3 +329,4 @@ asm void flat8_clear (long color)
 }
 #endif
 
+*/

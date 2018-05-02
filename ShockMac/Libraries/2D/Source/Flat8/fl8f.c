@@ -36,12 +36,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fl8tf.h"
 #include "cnvdat.h"
 #include "grnull.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 #include "fl8tmapdv.h"
 
 
 int gri_floor_umap_loop(grs_tmap_loop_info *tli);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 // main loop routine
@@ -63,7 +63,7 @@ void (*floor_in_loop[8])(void) = {gr_not_imp, gr_not_imp, floor_opaque_log2, flo
 uchar *f_clut_68K;
 ulong	f_wlog_68K;
 ulong	f_mask_68K;
-
+*/
 
 int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
    fix u,v,du,dv,dx,d;
@@ -94,14 +94,14 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
 
 	dx=tli->right.x-tli->left.x;
 
-	f_clut_68K = t_clut = tli->clut;
-	f_mask_68K = t_mask = tli->mask;
-	f_wlog_68K = t_wlog = tli->bm.wlog;
+	t_clut = tli->clut;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
 	t_vtab = tli->vtab;
 	t_bits = tli->bm.bits;
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    do {
       if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) {
          d =fix_ceil(tli->left.x)-tli->left.x;
@@ -241,11 +241,11 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
    } while (--(tli->n) > 0);
    return FALSE; /* tmap OK */
 // handle 68K loops
-#else
-	return(Handle_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,grd_bm.row));
-#endif
+//#else
+//	return(Handle_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,grd_bm.row));
+//#endif
 }
-	
+/*	
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -401,15 +401,17 @@ asm int Handle_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
   movem.l	(sp)+,d0-d7/a0-a6
   rts
  }
- 
+*/
+
+/*
 // handle inner loop for floor opaque (width log2) mode
 asm void floor_opaque_log2(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      *(p_dest++) = t_bits[k];		// gr_fill_upixel(t_bits[k],x,t_y);
      u+=du; v+=dv;
-  }*/
+  }
   
 	move.l	f_mask_68K,d2
 	move.l	f_wlog_68K,d3
@@ -437,12 +439,12 @@ asm void floor_opaque_log2(void)
  
 asm void floor_opaque_clut_log2(void)
  {
-/*
+
 	for (x=t_xl; x<t_xr; x++) {
 	   int k=t_vtab[fix_fint(v)]+fix_fint(u);
 	   *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,y);
 	   u+=du; v+=dv;
-	}*/
+	}
 	
 	move.l	f_clut_68K,a1
 	move.l	f_mask_68K,d2
@@ -476,12 +478,12 @@ asm void floor_opaque_clut_log2(void)
 
 asm void floor_trans_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	f_mask_68K,d2
 	move.l	f_wlog_68K,d3
@@ -521,12 +523,12 @@ asm void floor_trans_log2(void)
 
 asm void floor_trans_clut_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	f_mask_68K,d2
 	move.l	f_wlog_68K,d3
@@ -567,7 +569,7 @@ asm void floor_trans_clut_log2(void)
  
 // handle inner loop for opaque (width log2) mode
 #endif
-
+*/
 
 void gri_trans_floor_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&

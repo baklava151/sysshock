@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cnvdat.h"
 #include "flat8.h"
 #include "blndat.h"
-
+/*
 #if !(defined(powerc) || defined(__powerc))
 asm void Handle_Smooth_H_Asm(int	endh, int endv, long srcAdd, long dstAdd,
 															uchar *src, uchar *dst, uchar *local_grd_half_blend);
@@ -38,15 +38,16 @@ asm void Handle_Smooth_HV_Asm(int tempH, int tempW, int temp,
 															uchar *shvd_read_row2, uchar *shvd_read_blend,
 															uchar *dstPtr);
 #endif
-
+*/
 // ------------------------------------------------------------------------
 // PowerPC routines
 // ------------------------------------------------------------------------
 // ========================================================================
+/*
 void flat8_flat8_h_double_ubitmap(grs_bitmap *bm)
  {
 DebugStr("\pcall mark"); 	
-/* 	int		h,v,endh,endv;
+ 	int		h,v,endh,endv;
  	uchar *src=bm->bits, *dst=grd_bm.bits;
  	long	srcAdd,dstAdd;
  	uchar	temp;
@@ -67,9 +68,9 @@ DebugStr("\pcall mark");
  	 	 
  	 	src+=srcAdd;
  	 	dst+=dstAdd; 
- 	 }*/
+ 	 }
  }
-
+*/
 
 // ========================================================================
 void flat8_flat8_smooth_h_double_ubitmap(grs_bitmap *srcb, grs_bitmap *dstb)
@@ -88,7 +89,7 @@ void flat8_flat8_smooth_h_double_ubitmap(grs_bitmap *srcb, grs_bitmap *dstb)
  	endh = srcb->w-1;
  	endv = srcb->h;
  	
-#if defined(powerc) || defined(__powerc)
+//#if defined(powerc) || defined(__powerc)
  	for (v=0; v<endv; v++)
  	 {
  	 	curpix = * (short *) src;
@@ -110,11 +111,11 @@ void flat8_flat8_smooth_h_double_ubitmap(grs_bitmap *srcb, grs_bitmap *dstb)
  	 	src+=srcAdd;
  	 	dst+=dstAdd; 
  	 }
-#else
-	Handle_Smooth_H_Asm(endh,endv,srcAdd,dstAdd,src,dst,local_grd_half_blend);
-#endif
+//#else
+//	Handle_Smooth_H_Asm(endh,endv,srcAdd,dstAdd,src,dst,local_grd_half_blend);
+//#endif
  }
-
+/*
 #if !(defined(powerc) || defined(__powerc))
 asm void Handle_Smooth_H_Asm(int	endh, int endv, long srcAdd, long dstAdd,
 															uchar *src, uchar *dst, uchar *local_grd_half_blend)
@@ -156,7 +157,7 @@ asm void Handle_Smooth_H_Asm(int	endh, int endv, long srcAdd, long dstAdd,
  	rts
  }
 #endif
-
+*/
 
 // ========================================================================
 // src = eax, dest = edx
@@ -187,7 +188,7 @@ void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst)
 	shvd_read_blend = grd_half_blend;
 	savetemp = temp;
 	
-#if defined(powerc) || defined(__powerc)
+//#if defined(powerc) || defined(__powerc)
 	do
 	 {
 		do
@@ -218,14 +219,17 @@ void flat8_flat8_smooth_hv_double_ubitmap(grs_bitmap *src, grs_bitmap *dst)
 	
 	for (;savetemp>0; savetemp--)
 	  *(dstPtr++) = *(srcPtr++);
+/*
 #else	  
 	Handle_Smooth_HV_Asm(tempH,tempW,temp,
 											 shvd_read_row1, shvd_write, 
 											 shvd_read_row2, shvd_read_blend,
 											 dstPtr);
 #endif	
+*/
  }
- 
+
+/* 
 #if !(defined(powerc) || defined(__powerc))
 asm void Handle_Smooth_HV_Asm(int tempH, int tempW, int temp,
 															uchar	*shvd_read_row1, uchar *shvd_write, 
@@ -276,3 +280,4 @@ asm void Handle_Smooth_HV_Asm(int tempH, int tempW, int temp,
  	rts
  }
 #endif
+*/

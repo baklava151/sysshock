@@ -199,11 +199,11 @@ extern long flat8_get_upixel24 (short x, short y);
 extern long flat8_get_pixel24 (short x, short y);
 
 /* straight, rectangular-type primitives. */
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 extern void flat8_clear (long color);
-#else
-extern asm void flat8_clear (long color);
-#endif
+//#else
+//extern asm void flat8_clear (long color);
+//#endif
 extern void flat8_upoint (short x, short y);
 extern int flat8_point (short x, short y);
 extern void flat8_uhline (short x0, short y0, short x1);
@@ -305,11 +305,11 @@ int gri_opaque_clut_scale_umap_init(grs_tmap_loop_info *tli);
 
 /* bitmap drawing functions. */
 extern void flat8_mono_ubitmap (grs_bitmap *bm, short x, short y);
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))
 extern void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y);
-#else
-extern asm void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y);
-#endif
+//#else
+//extern asm void flat8_flat8_ubitmap (grs_bitmap *bm, short x, short y);
+//#endif
 extern void flat8_rsd8_ubitmap (grs_bitmap *bm, short x, short y);
 extern void flat8_tluc8_ubitmap (grs_bitmap *bm, short x, short y);
 extern int flat8_rsd8_bitmap (grs_bitmap *bm, short x, short y);
