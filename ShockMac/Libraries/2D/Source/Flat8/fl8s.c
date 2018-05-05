@@ -78,7 +78,7 @@ int gri_opaque_solid_scale_umap_init(grs_tmap_loop_info *info, grs_vertex **vert
 // ------------------------------------------------------------------------
 // PowerPC routines
 // ------------------------------------------------------------------------
-#if defined(powerc) || defined(__powerc)
+//#if defined(powerc) || defined(__powerc)
 
 // ========================================================================
 // transparent solid polygon scaler 
@@ -197,7 +197,7 @@ int gri_scale_umap_loop_PPC(grs_tmap_loop_info *tli) {
    
    return FALSE; /* tmap OK */
 }
- 
+/* 
 // ------------------------------------------------------------------------
 // 68K routines
 // ------------------------------------------------------------------------
@@ -279,7 +279,7 @@ int gri_scale_umap_loop_68K(grs_tmap_loop_info *tli) {
    p_src=tli->bm.bits+tli->bm.row*fix_int(tli->left.v);
    p_dest = grd_bm.bits + (grd_bm.row*tli->y) + xl;
    ILoop68k(xr-xl, ul, du, p_src, p_dest, tli);
-   return FALSE; /* tmap OK */
+   return FALSE; // tmap OK
 }
 
 
@@ -553,3 +553,4 @@ asm void ILoop68k(int count, fix ul, fix du, uchar *p_src, uchar *p_dest, grs_tm
 
  
 #endif
+*/

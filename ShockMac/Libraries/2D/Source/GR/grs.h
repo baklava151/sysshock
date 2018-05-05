@@ -165,14 +165,18 @@ typedef union {
    } f;
    struct {
       grs_stencil *sten;  /* pointer to stencil for nonrect clip region */
-      short left;          /* current clipping rectangle */
+//      short left;          /* current clipping rectangle */
       short pad0;
-      short top;           /* integral coordinates */
+      short left;
+//      short top;           /* integral coordinates */
       short pad1;
-      short right;
+      short top;
+//      short right;
       short pad2;
-      short bot;
+      short right;
+//      short bot;
       short pad3;
+      short bot;
    } i;
 } grs_clip;
 

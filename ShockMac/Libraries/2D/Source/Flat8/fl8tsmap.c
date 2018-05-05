@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "vtab.h"
 #include "fl8tf.h"
 #include "cnvdat.h"
-#include "2dDiv.h"
+#include "2ddiv.h"
 
 // prototypes
 int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli);
@@ -37,7 +37,7 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli);
 int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli);
 void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm);
 void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm);
-
+/*
 // 68K stuff
 #if !(defined(powerc) || defined(__powerc))	
 
@@ -71,7 +71,7 @@ uchar *s_bm_bits;
 fix 	s_l_scan_slope;
 int		s_gr_row;
 uchar	solid_color_68K;
-
+*/
 int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	fix u,v,du,dv,dx,d;
 
@@ -88,23 +88,23 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	long	gr_row;
 	uchar *start_pdest;
 							
-	solid_color_68K = solid_color = (uchar) tli->clut;
+	solid_color = (uchar) tli->clut;
 	u=tli->left.u;
 	du=tli->right.u-u;
 	v=tli->left.v;
 	dv=tli->right.v-v;
 	dx=tli->right.x-tli->left.x;
 
-	s_vtab_68K = t_vtab = tli->vtab;
-	s_mask_68K = t_mask = tli->mask;
-	s_wlog_68K = t_wlog = tli->bm.wlog;
+	t_vtab = tli->vtab;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
 
 	t_bits = tli->bm.bits;
 	gr_row = grd_bm.row;
 	start_pdest = grd_bm.bits + (gr_row*(tli->y));
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 	do {
 	  if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) 
 	    {
@@ -154,11 +154,11 @@ int gri_trans_solid_lin_umap_loop(grs_tmap_loop_info *tli) {
 	return FALSE; /* tmap OK */
 
 // handle 68K loops
-#else
-	return(Handle_Solid_Lin_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row));
-#endif
+//#else
+//	return(Handle_Solid_Lin_68K_Loop(u,v,du,dv,dx,tli,start_pdest,t_bits,gr_row));
+//#endif
 }
- 
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Solid_Lin_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
@@ -317,11 +317,11 @@ asm int Handle_Solid_Lin_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 // handle inner loop for transparent (non log2) mode
 asm void solid_lin_trans(void)
  {
-/*  for (x=t_xl; x<t_xr; x++) {
+  for (x=t_xl; x<t_xr; x++) {
      int k=t_vtab[fix_fint(v)]+fix_fint(u);
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.b	solid_color_68K,d2
 	move.l	s_vtab_68K,a6
@@ -361,12 +361,12 @@ asm void solid_lin_trans(void)
 // handle inner loop for transparent (width log2) mode
 asm void solid_lin_trans_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	d5,a6
 	move.b	solid_color_68K,d5
@@ -405,7 +405,7 @@ asm void solid_lin_trans_log2(void)
 	rts	   
  }
 #endif
-		 
+*/		 
 void gri_trans_solid_lin_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&
             (tli->bm.h==(1<<tli->bm.hlog))) {
@@ -434,20 +434,20 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
 	uchar	t_wlog;
 	ulong	t_mask;
 
-	solid_color_68K = solid_color = (uchar) tli->clut;
+	solid_color = (uchar) tli->clut;
 	u=fix_div(tli->left.u,tli->w);
 	du=fix_div(tli->right.u,tli->w)-u;
 	v=fix_div(tli->left.v,tli->w);
 	dv=fix_div(tli->right.v,tli->w)-v;
 	dx=tli->right.x-tli->left.x;
 
-	s_mask_68K = t_mask = tli->mask;
-	s_wlog_68K = t_wlog = tli->bm.wlog;
-	s_vtab_68K = t_vtab = tli->vtab;
+	t_mask = tli->mask;
+	t_wlog = tli->bm.wlog;
+	t_vtab = tli->vtab;
 	t_bits = tli->bm.bits;
 	gr_row = grd_bm.row;
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    do {
       if ((d = fix_ceil(tli->right.x)-fix_ceil(tli->left.x)) > 0) {
          d =fix_ceil(tli->left.x)-tli->left.x;
@@ -495,11 +495,11 @@ int gri_trans_solid_floor_umap_loop(grs_tmap_loop_info *tli) {
    } while (--(tli->n) > 0);
    return FALSE; /* tmap OK */
 // handle 68K loops
-#else
-	return(Handle_Solid_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,gr_row));
-#endif
+//#else
+//	return(Handle_Solid_Floor_68K_Loop(u,v,du,dv,dx,tli,grd_bm.bits,t_bits,gr_row));
+//#endif
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Solid_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 																		grs_tmap_loop_info *tli, uchar *start_pdest, uchar *t_bits, long gr_row)
@@ -655,12 +655,12 @@ asm int Handle_Solid_Floor_68K_Loop(fix u, fix v, fix du, fix dv, fix dx,
 
 asm void solid_floor_trans_log2(void)
  {
-/* 
+ 
   for (x=t_xl; x<t_xr; x++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,y);
      p_dest++; u+=du; v+=dv;
-  }*/
+  }
 	
 	move.l	d4,a1
 	move.b	solid_color_68K,d4
@@ -699,7 +699,7 @@ asm void solid_floor_trans_log2(void)
 	rts	   
  }
 #endif
-
+*/
 void gri_trans_solid_floor_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&
             (tli->bm.h==(1<<tli->bm.hlog))) {
@@ -730,7 +730,7 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
 	 long		gr_row;
 	 int		y;
 	 
-	 solid_color_68K = solid_color = (uchar) tli->clut;
+	 solid_color = (uchar) tli->clut;
    u=fix_div(tli->left.u,tli->w);
    du=fix_div(tli->right.u,tli->w)-u;
    v=fix_div(tli->left.v,tli->w);
@@ -738,14 +738,14 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
    dy=tli->right.y-tli->left.y;
 
 	 t_bits = tli->bm.bits;
-	 s_vtab_68K = t_vtab = tli->vtab;
-	 s_mask_68K = t_mask = tli->mask;
-	 s_wlog_68K = t_wlog = tli->bm.wlog;
+	 t_vtab = tli->vtab;
+	 t_mask = tli->mask;
+	 t_wlog = tli->bm.wlog;
 
 	 gr_row = grd_bm.row;
 
 // handle PowerPC loop
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    do {
       if ((d = fix_ceil(tli->right.y)-fix_ceil(tli->left.y)) > 0) {
  
@@ -796,11 +796,11 @@ int gri_solid_wall_umap_loop(grs_tmap_loop_info *tli) {
 
 	return FALSE;
 // handle 68K loops
-#else
-	return(Handle_Solid_Wall_68K_Loop(u,v,du,dv,dy,tli,grd_bm.bits,t_bits,gr_row)); 
-#endif
+//#else
+//	return(Handle_Solid_Wall_68K_Loop(u,v,du,dv,dy,tli,grd_bm.bits,t_bits,gr_row)); 
+//#endif
 }
-
+/*
 // Main 68K handler loop
 #if !(defined(powerc) || defined(__powerc))	
 asm int Handle_Solid_Wall_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
@@ -943,11 +943,11 @@ asm int Handle_Solid_Wall_68K_Loop(fix u, fix v, fix du, fix dv, fix dy,
 // handle inner loop for wall transparent (width log2) mode
 asm void solid_wall_trans_log2(void)
  {
-/*  for (y=t_yl; y<t_yr; y++) {
+  for (y=t_yl; y<t_yr; y++) {
      int k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
      if (temp_pix = t_bits[k]) 
        *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],t_x,y);
-     p_dest += gr_row; u+=du; v+=dv;*/
+     p_dest += gr_row; u+=du; v+=dv;
   
   move.l	d5,a6
   move.b 	solid_color_68K,d5
@@ -980,7 +980,7 @@ asm void solid_wall_trans_log2(void)
 	rts	   
  }
 #endif
-
+*/
 
 void gri_trans_solid_wall_umap_init(grs_tmap_loop_info *tli) {
    if ((tli->bm.row==(1<<tli->bm.wlog)) &&
@@ -1011,7 +1011,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	 int	gr_row,temp_y;
 	 uchar *bm_bits;
 	 
-	 solid_color_68K = solid_color = (uchar) pi->clut;
+	 solid_color = (uchar) pi->clut;
 	 gr_row = grd_bm.row;
 	 bm_bits = bm->bits;
 	 l_dyr = pi->dyr;
@@ -1069,7 +1069,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
    
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    for (;l_x<l_xr0;l_x++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
@@ -1086,6 +1086,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       l_u+=l_du;
       l_v+=l_dv;
    }
+   /*
 #else
 	if (l_x<l_xr0)
 	 {
@@ -1099,7 +1100,7 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 		l_x=l_xr0;
 	 }
 #endif
-   
+   */   
    if (l_x<l_xr) {
       fix test=l_x*l_dyr-y_cint*pi->dxr+pi->cr;
    		p=grd_bm.bits+l_x+y_cint*grd_bm.row;
@@ -1132,11 +1133,11 @@ void gri_trans_solid_per_umap_hscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->du = l_du;
 	pi->dv = l_dv;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void solid_trans_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fix *l_v, uchar **p, fix *l_y_fix, int *y_cint)
  { 
-/*   for (;l_x<l_xr0;l_x++) {
+   for (;l_x<l_xr0;l_x++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
       if (temp_pix=bm_bits[k]) *p=temp_pix;		// gr_fill_upixel(bm_bits[k],l_x,y_cint);
@@ -1152,7 +1153,7 @@ asm void solid_trans_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fi
        }
       l_u+=l_du;
       l_v+=l_dv;
-   }*/
+   }
 
   movem.l	d0-d7/a0-a6,-(sp)    
 	
@@ -1236,7 +1237,7 @@ asm void solid_trans_per_hscan_68K_Loop(int dx, fix l_du, fix l_dv, fix *l_u, fi
 	rts
  }
 #endif
-
+*/
 void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
    int x_cint;
 	 uchar	solid_color;
@@ -1248,7 +1249,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	 uchar *bm_bits;
 	 uchar *p;
 
-	 solid_color_68K = solid_color = (uchar) pi->clut;
+	 solid_color = (uchar) pi->clut;
 	 gr_row = grd_bm.row;
 	 bm_bits = bm->bits;
    l_dxr = pi->dxr;
@@ -1306,7 +1307,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       }
    }
    
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
    for (;l_y<l_yr0;l_y++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
@@ -1321,6 +1322,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
       l_u+=l_du;
       l_v+=l_dv;
    }
+   /*
 #else
 	if (l_y<l_yr0)
 	 {
@@ -1334,7 +1336,7 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	 	l_y  = l_yr0;
 	 }
 #endif
-   
+   */
    if (l_y<l_yr) {
       fix test=l_y*l_dxr-x_cint*l_dyr+pi->cr;
    		p=grd_bm.bits+x_cint+l_y*gr_row;
@@ -1368,11 +1370,11 @@ void gri_trans_solid_per_umap_vscan_scanline(grs_per_info *pi, grs_bitmap *bm) {
 	pi->du = l_du;
 	pi->dv = l_dv;
 }
-
+/*
 #if !(defined(powerc) || defined(__powerc))	
 asm void solid_trans_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fix *l_v, uchar **p, fix *l_x_fix, int *x_cint)
  {
-/*    for (;l_y<l_yr0;l_y++) {
+    for (;l_y<l_yr0;l_y++) {
       int k=(l_u>>16)&l_u_mask;
       k+=(l_v>>l_v_shift)&l_v_mask;
       *p=bm_bits[k];		// gr_fill_upixel(bm_bits[k],x_cint,l_y);
@@ -1385,7 +1387,7 @@ asm void solid_trans_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fi
       p+=gr_row;
       l_u+=l_du;
       l_v+=l_dv;
-*/
+
   movem.l	d0-d7/a0-a6,-(sp)    
 
 	move.l	64(sp),d0		// dy
@@ -1451,7 +1453,7 @@ asm void solid_trans_per_vscan_68K_Loop(int dy, fix l_du, fix l_dv, fix *l_u, fi
 	rts
  }
 #endif
-
+*/
 
 extern void gri_per_umap_hscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
 extern void gri_per_umap_vscan(grs_bitmap *bm, int n, grs_vertex **vpl, grs_per_setup *ps);
@@ -1465,7 +1467,3 @@ void gri_trans_solid_per_umap_vscan_init(grs_bitmap *bm, grs_per_setup *ps) {
    ps->shell_func=(void (*)()) gri_per_umap_vscan;
    ps->scanline_func=(void (*)()) gri_trans_solid_per_umap_vscan_scanline;
 }
-
-
-
-

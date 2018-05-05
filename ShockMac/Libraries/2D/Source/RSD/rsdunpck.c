@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define bhs	bcc		// branch high or same (unsigned >=)
 
 
-#if defined(powerc) || defined(__powerc)
+                                    //#if defined(powerc) || defined(__powerc)
 //----------------------------------------------------------------------------
 // PowerPC version
 #define kMinLongLoop 4			// minimum # of bytes to need before using long store loop
@@ -181,7 +181,7 @@ uchar *gr_rsd8_unpack(uchar *src, uchar *dest)
  	
  	return(dest);
  }
- 
+/*
 #else // !(defined(powerc) || defined(__powerc))
 //----------------------------------------------------------------------------
 // 68K version
@@ -304,3 +304,4 @@ asm uchar *gr_rsd8_unpack(uchar* src, uchar *dst)
  }
 
 #endif
+*/

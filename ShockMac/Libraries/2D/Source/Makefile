@@ -1,9 +1,9 @@
 OBJECTS := init.o chrsiz.o bitmap.o blend.o buffer.o canvas.o chain.o chnfuncs.o chrwid.o close.o cnvtab.o context.o detect.o devtab.o fcntab.o invtab.o lintab.o mode.o pal.o permap.o persetup.o pertol.o pixfill.o rgb.o screen.o
 OBJECTS += sscrn.o statestk.o strnsiz.o strscl.o strsiz.o struscl.o strwid.o strwrap.o svgainit.o tempbm.o temptm.o tluctab.o valloc.o vtab.o wirpoly.o
 #ASM_OBJECTS := permaploop.o
-INCLUDES := -I../../H -I../../LG/Source -I./GR -I../../FIX/Source -I. -I../../PALETTE/Source -I./CLIP -I./'Flat 8' -I./GEN
+INCLUDES := -I../../H -I../../LG/Source -I./GR -I../../FIX/Source -I. -I../../PALETTE/Source -I./CLIP -I./Flat8 -I./GEN
 
-SUBDIRS := CLIP Flat8
+SUBDIRS := CLIP Flat8 GEN GR RSD
 
 all: $(OBJECTS) $(ASM_OBJECTS) subdirs
 

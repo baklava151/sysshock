@@ -107,7 +107,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
          d =fix_ceil(tli->left.x)-tli->left.x;
 
 #if InvDiv
-  			 inv = fix_div(fix_make(1,0),dx);
+		 inv = fix_div(fix_make(1,0),dx);
          du=fix_mul_asm_safe(du,inv);	
          dv=fix_mul_asm_safe(dv,inv);	
 #else
@@ -119,8 +119,8 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
          v+=fix_mul(dv,d);
 
 			   // copy out tli-> stuff into locals
-				 p_dest = grd_bm.bits + (grd_bm.row*tli->y) + fix_cint(tli->left.x);
-			   x = fix_cint(tli->right.x) - fix_cint(tli->left.x);
+		 p_dest = grd_bm.bits + (grd_bm.row*tli->y) + fix_cint(tli->left.x);
+         x = fix_cint(tli->right.x) - fix_cint(tli->left.x);
 
          switch (tli->bm.hlog) {
          case GRL_OPAQUE:
@@ -146,7 +146,7 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
             break;
          case GRL_TRANS|GRL_LOG2:
             for (; x>0; x--) {
-               k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+                k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           	 if (temp_pix=t_bits[k]) *p_dest = temp_pix;		// gr_fill_upixel(t_bits[k],x,t_y);
                p_dest++; u+=du; v+=dv;
             }
@@ -168,14 +168,14 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
          case GRL_OPAQUE|GRL_LOG2|GRL_CLUT:
          			 while ((long) p_dest & 3 != 0)
          			  {
-	               k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+                          k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 		           	 *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
 	               u+=du; v+=dv;
 	               x--;
          			  }
          			  
             	 while (x>=4)
-            	  {
+            	  {/*
 	               k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 		           	 inv = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
 	               u+=du; v+=dv;
@@ -198,17 +198,41 @@ int gri_floor_umap_loop(grs_tmap_loop_info *tli) {
 								 * (long *) p_dest = inv;
 								 x -= 4;
 								 p_dest += 4;
+                   */
+                      k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+		           	 inv = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
+	               u+=du; v+=dv;
+								 inv >>=8;
+								 
+                                 k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+		           	 inv |= t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
+	               u+=du; v+=dv;
+								 inv >>=8;
+
+                                 k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+		           	 inv |= t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
+	               u+=du; v+=dv;
+								 inv >>=8;
+
+                                 k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+		           	 inv |= t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
+	               u+=du; v+=dv;
+
+								 * (long *) p_dest = inv;
+								 x -= 4;
+								 p_dest += 4;
+
             	  }
             	 
             for (; x>0; x--) {
-               k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+                k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           	 *(p_dest++) = t_clut[t_bits[k]];		// gr_fill_upixel(tli->clut[t_bits[k]],x,t_y);
                u+=du; v+=dv;
             }
             break;
          case GRL_TRANS|GRL_LOG2|GRL_CLUT:
             for (; x>0; x--) {
-               k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
+                k=((fix_fint(v)<<t_wlog)+fix_fint(u))&t_mask;
 	           	 if (k=t_bits[k]) *p_dest = t_clut[k];		// gr_fill_upixel(tli->clut[k],x,t_y);
                p_dest++; u+=du; v+=dv;
             }
