@@ -82,10 +82,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 
 
 
-#include <FixMath.h>
+//#include <FixMath.h>
+#include "fix.h"
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 /*#define f1_0	 fixmake(1)
 #define f0_5	 fixmake(0,8000h)
@@ -114,12 +115,12 @@ void process_view_matrix(void);
 void scale_view_matrix(void);
 void get_pyr_vector(g3s_vector *corners);
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 int code_point(g3s_point *pt);
-#else
+/*#else
 asm int code_point(g3s_point *pt);
 #endif
-
+*/
 void compute_XYZ(g3s_matrix *view_matrix);
 void compute_YXZ(g3s_matrix *view_matrix);
 void compute_YZX(g3s_matrix *view_matrix);
@@ -249,7 +250,7 @@ void compute_YXZ(g3s_matrix *view_matrix)
 	view_matrix->m9 = fix_mul(cosh_s,cosp);
  }
  
-
+/*
 void compute_YZX(g3s_matrix *view_matrix)
  {
  	DebugStr("\pcompute_YZX needs to be implemented");
@@ -272,7 +273,7 @@ void compute_ZYX(g3s_matrix *view_matrix)
  {
  	DebugStr("\pcompute_ZYX needs to be implemented");
  }
- 
+*/
 // invalid does nothing (and does it well!)
 void compute_invalid(g3s_matrix *view_matrix)
  {
@@ -390,7 +391,7 @@ void scale_view_matrix(void)
 // including the C&D coder, and a clever one using the set<cond> instruction
 // that contained no jumps.  On my (Matt's) 486, this dull, straightforward
 // one was just as fast as any other, and short, too.
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 int code_point(g3s_point *pt)	
  {
  	int	code;
@@ -417,6 +418,7 @@ int code_point(g3s_point *pt)
  	pt->codes = code;
  	return(code);
  }
+/*
 #else
 asm int code_point(g3s_point *pt)	
  {
@@ -453,7 +455,7 @@ bot_ok:
  	rts
  }
 #endif
-
+*/
 // general matrix multiply. takes esi=src vector, edi=matrix, ebx=dest vector
 // src and dest vectors can be the same
 void g3_vec_rotate(g3s_vector *dest,g3s_vector *src,g3s_matrix *m)

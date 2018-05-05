@@ -25,20 +25,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Point definition routines
 //
 
-#include <FixMath.h>
+//#include <FixMath.h>
+#include "fix.h"
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 // prototypes
 void rotate_norm(g3s_vector *v, fix *x, fix *y, fix *z);
 void do_norm_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
 
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
-#else
-asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
-#endif
+//#else
+//asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz);
+//#endif
 
 //void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z);     
 #define xlate_rotate_point(v,x,y,z) do_rotate(v->gX-_view_position.gX, v->gY-_view_position.gY, v->gZ-_view_position.gZ,x,y,z)    
@@ -101,7 +102,7 @@ g3s_phandle g3_transform_point(g3s_vector *v)
 // takes edi = ptr to point. projects, fills in sx,sy, sets flag.
 // returns 0 if z<=0, 1 if z>0.
 // trashes eax,ecx,edx.
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 int g3_project_point(g3s_phandle p)
  {
  	fix		x,y,z,res;
@@ -206,6 +207,7 @@ no_stereo2:
 	// point has been projected.
 	return 1;
  }
+/*
 #else
 // 68K g3_project_point
 asm int g3_project_point(g3s_phandle p)
@@ -264,7 +266,7 @@ project_overflow:
 	rts
  }
 #endif
- 
+*/ 
 // MLA - all the divide exception handler overflow stuff was removed, and checked before
 // each divide.  So all of this stuf isn't needed
 /*
@@ -420,7 +422,7 @@ void xlate_rotate_point(g3s_vector *v, fix *x, fix *y, fix *z)
  
 //does the rotate with the view matrix.
 //takes <x,y,z> = <esi,edi,ebp>, returns <x,y,z> = <ecx,esi,eax>
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  {
  	AWide 	result,result2;
@@ -450,6 +452,7 @@ void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
 	AsmWideAdd(&result, &result2);
 	*rz = (result.hi<<16) | (((ulong) result.lo)>>16);
  }
+/*
 #else
 asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  { 
@@ -529,7 +532,7 @@ asm void do_rotate(fix x, fix y, fix z, fix *rx, fix *ry, fix *rz)
  	rts
  }
 #endif 
-
+*/
 //rotate an x delta. takes edi=dest vector, eax=dx
 //trashes eax,ebx,edx
 void g3_rotate_delta_x(g3s_vector *dest,fix dx)

@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 // externs
 extern void angles_2_matrix(g3s_angvec *angles, g3s_matrix *view_matrix, int rotation_order);

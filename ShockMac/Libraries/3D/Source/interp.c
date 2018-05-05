@@ -79,8 +79,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
-#include <String.h>
+#include "globalv.h"
+#include <string.h>
 //#include <_stdarg.h>
 #include <stdarg.h>
 
@@ -226,7 +226,8 @@ void g3_interpret_object(ubyte *object_ptr,...)
  	size = * (short *) (object_ptr-4);
  	size -= 10;	// skip the first 10 bytes
  	
- 	BlockMove(object_ptr-2,obj_space,size);
+ 	//BlockMove(object_ptr-2,obj_space,size);
+    memmove(obj_space,object_ptr-2,size);
  	
   // lighting stuff, params are on the stack
   // so don't sweat it
@@ -375,7 +376,8 @@ g3_interpret_object_raw:
    }
    
 Exit:
- 	BlockMove(obj_space,object_ptr-2,size);
+ 	//BlockMove(obj_space,object_ptr-2,size);
+    memmove(object_ptr-2,obj_space,size);
  }
 
 // interpret the object
@@ -447,7 +449,7 @@ uchar *do_multires(uchar *opcode)
 uchar *do_scaleres(uchar *opcode)
  {
  	// MLA - this routine appears to be buggy and can't possibly work, so I'm not doing it yet.
- 	DebugStr("\pCall Mark!");
+// 	DebugStr("\pCall Mark!");
  	
 /* 	int					count,scale;
 	long				temp_pnt[3];

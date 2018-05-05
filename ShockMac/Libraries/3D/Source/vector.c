@@ -37,10 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 
 // 
 
-#include <FixMath.h>
+//#include <FixMath.h>
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 #include "fix.h"
 
 

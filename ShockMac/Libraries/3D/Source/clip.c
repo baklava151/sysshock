@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fix.h"
 #include "3d.h"
 #include "2d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 #define NEXTI(x) ( ((x)+1==n) ? 0 : (x)+1 )
 

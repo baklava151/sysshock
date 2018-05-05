@@ -1,7 +1,7 @@
 CFLAGS := -c -fpack-struct -m32 -Wno-unused-result
 export CFLAGS
 LIBDIR := ShockMac/Libraries
-.LIBS := 2D/Source
+.LIBS := 2D/Source 3D/Source
 LIBS = $(addprefix $(LIBDIR)/, $(.LIBS))
 
 ifeq ($(DBG),y)

@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 // need this from 2D lib
 extern int h_map(grs_bitmap *bm, int n, grs_vertex **vpl, grs_tmap_info *ti);
@@ -99,14 +99,15 @@ grs_tmap_info tmap_info;
 char 	_g3d_enable_blend = 0;
 
 // prototypes
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 char SubLongWithOverflow(long *result, long src, long dest);
 char AddLongWithOverflow(long *result, long src, long dest);
+/*
 #else
 asm char SubLongWithOverflow(long *result, long src, long dest);
 asm char AddLongWithOverflow(long *result, long src, long dest);
 #endif
-
+*/
 grs_vertex **do_bitmap(grs_bitmap *bm, g3s_phandle p);
 grs_vertex **g3_bitmap_common(grs_bitmap *bm, g3s_phandle p);
 
@@ -408,7 +409,7 @@ NoBlend:
  	return(_g3d_bitmap_poly);
  }
  
-#if (defined(powerc) || defined(__powerc))	
+//#if (defined(powerc) || defined(__powerc))	
 // subtract two longs, put the result in result, and return true if overflow
 // result = src-dest;
 char SubLongWithOverflow(long *result, long src, long dest)
@@ -436,6 +437,7 @@ char AddLongWithOverflow(long *result, long src, long dest)
  	else
  		return false;
  }
+/*
 #else
 asm char SubLongWithOverflow(long *result, long src, long dest)
  {
@@ -469,3 +471,4 @@ asm char AddLongWithOverflow(long *result, long src, long dest)
 	rts
  }
 #endif
+*/

@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
 
 // returns current field of view. returns ax=x FOV, bx=y FOV
 // trashes eax,ebx,ecx,edx,edi

@@ -27,7 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "3d.h"
-#include "GlobalV.h"
+#include "globalv.h"
+#include <string.h>
 
 // prototypes
 int check_and_draw_common(long c,int n_verts,g3s_phandle *p);
@@ -277,7 +278,8 @@ draw_poly_common_raw:
 	p = old_p;
 	
 // copy to temp buffer for clipping
-	BlockMove(p,vbuf,n_verts<<2);
+//	BlockMove(p,vbuf,n_verts<<2);
+    memmove(vbuf,p,n_verts<<2);
 	
 	n_verts = g3_clip_polygon(n_verts,vbuf,_vbuf2);
 	if (!n_verts)
@@ -469,7 +471,7 @@ int draw_line_common(g3s_phandle p0,g3s_phandle p1)
 	  }
 	 else	// sline
 	  {
-	  	DebugStr("\pimplement me?");	
+//	  	DebugStr("\pimplement me?");	
 // we have to do this annoyingly because i is an sfix,
 // and 2d takes a fix, so we dump things in eax and munge
 /*
