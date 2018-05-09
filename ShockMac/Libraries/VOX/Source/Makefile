@@ -1,9 +1,12 @@
 OBJECTS := vox2d.o vox3d.o voxinit.o
 
+voxlib.o: $(OBJECTS)
+	ld -m elf_i386 -r $(OBJECTS) -o voxlib.o
+
 all: $(OBJECTS)
 
 %.o: %.c
-	gcc -m32 -O2 -c -I../../2D/Source/ -I../../FIX/Source -I../../H -I../../3D/Source -I../../LG/Source -o $@ $<
+	gcc $(CFLAGS) -I../../H -I../../LG/Source -o $@ $<
 
 .PHONY: clean
 
