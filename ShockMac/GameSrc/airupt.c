@@ -521,7 +521,7 @@ void grind_music_ai(void)
    old_deconst = in_deconst;
 }
 
-errtype check_asynch_ai(bool /*new_score_ok*/)
+errtype check_asynch_ai(bool new_score_ok)
 {
 //   extern bool mlimbs_semaphore;
 //еее   if (ai_cycle)

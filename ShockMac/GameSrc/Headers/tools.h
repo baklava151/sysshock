@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes
 #include "res.h"
+//#include "grs.h"
+#include "2d.h"
 
 // C Library Includes
 

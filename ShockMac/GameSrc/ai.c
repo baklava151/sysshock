@@ -64,6 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "lg_types.h"
 #include "edms.h"
 
+#include "2d.h"
+
 #define AI_EDMS
 
 //errtype ai_fire_slow_projectile(ObjID src, int proj_triple, ObjLoc src_loc, ObjLoc target_loc, uchar a, int duration);

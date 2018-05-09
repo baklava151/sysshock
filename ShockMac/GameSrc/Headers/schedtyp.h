@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // Includes
+#include "pqueue.h"
 
 // This is the only thing defined here. To minimize dependency.
 typedef struct _schedule

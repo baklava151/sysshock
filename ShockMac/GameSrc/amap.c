@@ -1059,7 +1059,7 @@ bool amap_get_note(curAMap *amptr, char *buf)
    return retval;
 }
 
-grs_bitmap *screen_automap_bitmap(char)
+grs_bitmap *screen_automap_bitmap(char tmp)
 {
    extern grs_bitmap *static_bitmap;
    return(static_bitmap);

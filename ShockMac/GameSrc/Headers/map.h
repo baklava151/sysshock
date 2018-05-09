@@ -125,10 +125,16 @@ typedef struct _map_element {
 //            uchar ceil;
 //         } cyber;
 //      } space;
+    /*
    uchar flag4;			// KLC swapped around
    uchar flag3;
    uchar flag2;
    uchar flag1;      // rename these, perhaps
+    */
+    uchar flag1;
+    uchar flag2;
+    uchar flag3;
+    uchar flag4;
 //   ulong flags;
    uchar sub_clip;
    uchar clearsolid;
@@ -223,8 +229,9 @@ typedef struct {
    Schedule sched[NUM_MAP_SCHEDULES];
 } FullMap;
 
-#define _me_normal_x(me_ptr,strname,maskname) ((me_ptr)->##strname##&(##maskname##_MASK))
-#define _me_normal_n(me_ptr,strname,maskname) (_me_normal_x(me_ptr,strname,maskname)>>##maskname##_SHF)
+//#define _me_normal_x(me_ptr,strname,maskname) ((me_ptr)->##strname##&(##maskname##_MASK))
+#define _me_normal_x(me_ptr,strname,maskname) ((me_ptr)->strname & (maskname##_MASK))
+#define _me_normal_n(me_ptr,strname,maskname) (_me_normal_x(me_ptr,strname,maskname)>> maskname##_SHF)
 
 #define _me_tiletype(me_ptr)             ((me_ptr)->tiletype)
 
@@ -254,7 +261,8 @@ typedef struct {
 #define _me_cybcolor_ceil(me_ptr)      (*((uchar *)(&((me_ptr)->tmap_ccolor))+1))
 
 // note this returns a long of form f4f3f2f1, so flag4 is most significant, as it were
-#define _me_flags(me_ptr)              (*((ulong *)(&((me_ptr)->flag4))))		// KLC changed
+//#define _me_flags(me_ptr)              (*((ulong *)(&((me_ptr)->flag4))))		// KLC changed
+#define _me_flags(me_ptr)              (*((uint *)(&((me_ptr)->flag4))))		// KLC changed
 #define _me_flag1(me_ptr)                ((me_ptr)->flag1)
 #define _me_flag2(me_ptr)                ((me_ptr)->flag2)
 #define _me_flag3(me_ptr)                ((me_ptr)->flag3)
@@ -294,10 +302,13 @@ typedef struct {
 #define _me_templight_ceil(me_ptr)       _me_normal_n(me_ptr,templight,MAP_TLGHT_CEIL)
 #define _me_templight_flr_x(me_ptr)      _me_normal_x(me_ptr,templight,MAP_TLGHT_FLOOR)
 #define _me_templight_flr(me_ptr)        _me_normal_n(me_ptr,templight,MAP_TLGHT_FLOOR)
-
+  /*
 // implicit me_ptr and v
 #define _me_merge_set(me_ptr,v,strname,maskname) \
                                          ((me_ptr)->##strname##=((me_ptr)->##strname##&~(##maskname##_MASK))|((v)<<(##maskname##_SHF)))
+  */
+#define _me_merge_set(me_ptr,v,strname,maskname) \
+                                         ((me_ptr)->strname=((me_ptr)->strname&~(maskname##_MASK))|((v)<<(maskname##_SHF)))
 
 // Now all the set primitives
 #define _me_tiletype_set(me_ptr,v)       ((me_ptr)->tiletype=(v))

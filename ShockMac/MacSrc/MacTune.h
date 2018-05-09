@@ -24,8 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //==============================================================================
 
-
+                                    // CREMEMBER
 #include <Timer.h>
+#include "lg_types.h"
+#include "error.h"
 
 //-----------------
 //  TYPES & DEFINES

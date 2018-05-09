@@ -31,6 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Includes
 #include "objects.h"
 #include "lg_types.h"
+#include "error.h"
+// CREMEMBER
+// Put sound back in
+//#include "lgsndx.h"
 
 // C Library Includes
 
@@ -142,7 +146,7 @@ bool digi_fx_playing(int fx_id, int *handle_ptr);
 errtype output_text(char *);
 extern void mlimbs_do_ai(void);
 
-extern void digifx_EOS_callback(snd_digi_parms *sdp);
+//extern void digifx_EOS_callback(snd_digi_parms *sdp);
 
 extern bool digi_pan_reverse;
 

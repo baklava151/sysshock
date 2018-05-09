@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "gameloop.h"
 #include "frtypesx.h"
+#include "region.h"
 
 #define QUIT_LOOP    -1
 #define GAME_LOOP     0

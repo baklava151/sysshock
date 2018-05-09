@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "error.h"
 #include "res.h"
 #include "fix.h"
+#include "2d.h"
+#include "physhand.h"
 
 #define ID2SPEC(id)  (objs[(id)].specID)
 
