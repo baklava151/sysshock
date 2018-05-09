@@ -23,10 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //===============================================================
 
 #include <string.h>
-#include <Timer.h>
+                                    //#include <Timer.h>
 #include "lg.h"
 #include "kb.h"
 #include "kbglob.h"
+
+#include <SDL2/SDL.h>
 
 
 //------------------
@@ -39,7 +41,7 @@ uchar		pKbdGetKeys[16];
 //---------------------------------------------------------------
 //  Startup and keyboard handlers and initialize globals.   Shutdown follows.
 //---------------------------------------------------------------
-int kb_startup(void *)
+int kb_startup()
 {
 	pKbdStatusFlags = 0;
 	
@@ -48,7 +50,7 @@ int kb_startup(void *)
 	return (0);
 }
 
-int kb_shutdown(void)
+int kb_shutdown()
 {
 	return (0);
 }
@@ -72,19 +74,23 @@ void kb_set_flags(int flags)
 kbs_event kb_next(void)
 {
 	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
-	EventRecord	theEvent;
+	bool				gotKey = false;
+	//EventRecord	theEvent;
+    SDL_Event event;
 	kbs_event		retEvent = { 0xFF, 0x00 };
 
 	while(!gotKey)
 	{
-		gotKey = GetOSEvent(keyDownMask | autoKeyMask, &theEvent);		// Get a key
+		//gotKey = GetOSEvent(keyDownMask | autoKeyMask, &theEvent);		// Get a key
+        SDL_PollEvent(&event);
+        gotKey = (event.type == SDL_KEYDOWN);
 		if (gotKey)
 		{
-			retEvent.code = (uchar)(theEvent.message >> 8);
+			//retEvent.code = (uchar)(theEvent.message >> 8);
+            retEvent.code = event.key.keysym.scancode;
 			retEvent.state = KBS_DOWN;
-			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
-			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
+//			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
+//			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
 		}
 		else if ((flags & KBF_BLOCK) == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
@@ -97,9 +103,11 @@ kbs_event kb_next(void)
 //---------------------------------------------------------------
 kbs_event kb_look_next(void)
 {
+    kb_next();
+    /* CREMEMBER
 	int				flags = kb_get_flags();
-	bool				gotKey = FALSE;
-	EventRecord	theEvent;
+	bool				gotKey = false;
+	//EventRecord	theEvent;
 	kbs_event		retEvent = { 0xFF, 0x00 };
 
 	while(!gotKey)
@@ -109,13 +117,14 @@ kbs_event kb_look_next(void)
 		{
 			retEvent.code = (uchar)(theEvent.message >> 8);
 			retEvent.state = KBS_DOWN;
-			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
-			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
+//			retEvent.ascii = (uchar)(theEvent.message & charCodeMask);
+//			retEvent.modifiers = (uchar)(theEvent.modifiers >> 8);
 		}
 		else if (flags & KBF_BLOCK == 0)					// If there was no key and we're
 			return (retEvent);										// not blocking, then return.
 	}
 	return (retEvent);
+    */
 }
 
 
@@ -124,10 +133,11 @@ kbs_event kb_look_next(void)
 //---------------------------------------------------------------
 void kb_flush(void)
 {
-	FlushEvents(keyDownMask | autoKeyMask, 0);
+	//FlushEvents(keyDownMask | autoKeyMask, 0);
+    SDL_FlushEvent(SDL_KEYDOWN);
 }
 
-
+/*
 //---------------------------------------------------------------
 //  Return the state of the indicated key (scan code).
 //---------------------------------------------------------------
@@ -136,3 +146,4 @@ uchar kb_state(uchar code)
 	GetKeys((UInt32 *) pKbdGetKeys);
 	return ((pKbdGetKeys[code>>3] >> (code & 7)) & 1);
 }
+*/

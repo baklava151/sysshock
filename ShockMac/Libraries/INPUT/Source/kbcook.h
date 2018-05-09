@@ -34,19 +34,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "error.h"
 #include "kb.h"
 
-/*
-#define KB_CNV_SHIFT   1 
+int kbd_modifier_state;
+
+#define KB_CNV_SHIFT   1
 #define KB_CNV_NOSHIFT 0
 #define KB_CNV_TBLSIZE 0xE0
 
 extern ushort kb_cnv_table[KB_CNV_TBLSIZE][2];
-
+/*
 #ifdef DEBUG_ON
 #define KB_CNV(scan,shift) (((scan) >= KB_CNV_TBLSIZE) ? 0 : kb_cnv_table[scan][shift])
 #else
 #define KB_CNV(scan,shift) (kb_cnv_table[scan][shift])
 #endif
 */
+
+#define KB_CNV(scan,shift) (kb_cnv_table[scan][shift])
 
 #define CNV_CTRL     (1<<(1+8)) // KB_FLAG_CTRL can be set
 #define CNV_ALT      (1<<(2+8)) // KB_FLAG_SHIFT can be set

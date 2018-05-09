@@ -34,8 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 typedef struct {
    uchar code;
    uchar state;
-   uchar ascii;				// Added for Mac version
-   uchar modifiers;			//   "    "   "     "
+//   uchar ascii;				// Added for Mac version
+//   uchar modifiers;			//   "    "   "     "
 } kbs_event;
 #endif /* !__KBS_H */
 
@@ -68,10 +68,12 @@ typedef struct {
 extern uchar kb_state(uchar code);
 #endif
 
+
+
 #define kb_init kb_startup
 #define kb_close kb_shutdown
-extern int kb_startup(void *init_buf);
-extern int kb_shutdown(void);
+extern int kb_startup();
+extern int kb_shutdown();
 
 extern kbs_event kb_next(void);
 extern kbs_event kb_look_next(void);
@@ -127,6 +129,35 @@ extern char * kbd_lowmem_start;
 #define KBC_PRSCR_UP (0x0aa)
 #define KBC_PAUSE (0x07f)
 #define KBC_NONE (0x0ff)
+
+#define KBC_LSHIFT       0x2A
+#define KBC_RSHIFT       0x36
+#define KBC_LCTRL        0x1D
+#define KBC_RCTRL        0x9D
+#define KBC_LALT         0x38
+#define KBC_RALT         0xB8
+#define KBC_CAPS         0x3A
+#define KBC_NUM          0x45
+#define KBC_SCROLL       0x46
+#define KBC_ACK          0xfa
+#define KBC_RESEND       0xfe
+
 #define KBS_UP (0)
 #define KBS_DOWN (1)
+
+#define KBM_SCROLL   0x0001
+#define KBM_NUM      0x0002
+#define KBM_CAPS     0x0004
+#define KBM_LSHIFT   0x0008
+#define KBM_RSHIFT   0x0010
+#define KBM_LCTRL    0x0020
+#define KBM_RCTRL    0x0040
+#define KBM_LALT     0x0080
+#define KBM_RALT     0x0100
+#define KBM_LED_MASK 7
+#define KBM_CAPS_SHF  2
+#define KBM_SHIFT_SHF 3
+#define KBM_CTRL_SHF  5
+#define KBM_ALT_SHF   7
+
 #endif /* !__KB_H */
