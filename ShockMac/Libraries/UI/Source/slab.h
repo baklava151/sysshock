@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cursors.h"
 
 // Defines
-
+/*
 typedef struct _ui_slab
 {
    LGRegion* creg;  // cursor region.
@@ -71,7 +71,7 @@ typedef struct _ui_slab
    } fchain;  // focus chain
    cursor_stack cstack;
 } uiSlab;
-
+*/
 
 // Prototypes
 

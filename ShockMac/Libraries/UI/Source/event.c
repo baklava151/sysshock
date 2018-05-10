@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <SDL2/SDL.h>
 
 #include "lg.h"
 #include "mouse.h" 
@@ -689,18 +690,25 @@ errtype uiSetKeyboardPolling(ubyte* codes)
 // before dispatching an event.
 void ui_poll_keyboard(void)
 {
+    /*
 	extern uchar	pKbdGetKeys[16];
 	long			*keys = (long *)pKbdGetKeys;
 	GetKeys((UInt32 *)keys);
+    */
 
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    
 	uchar *key;
 	for (key = ui_poll_keys; *key != KBC_NONE; key++)
-		if((pKbdGetKeys[*key>>3] >> (*key & 7)) & 1)
+    {
+//		if((pKbdGetKeys[*key>>3] >> (*key & 7)) & 1)
+        if (state[*key])
 		{
 			uiPollKeyEvent ev;
 			ev.type = UI_EVENT_KBD_POLL;
 			ev.action = KBS_DOWN;
 			ev.scancode = *key;
+            /*
 			ev.mods = 0;
 			if ((keys[1] & 0x00000001) != 0L)	// Shift key
 				ev.mods |= KB_FLAG_SHIFT;
@@ -708,9 +716,10 @@ void ui_poll_keyboard(void)
 				ev.mods |= KB_FLAG_CTRL;
 			if ((keys[1] & 0x00000004) != 0L)	// Option key
 				ev.mods |= KB_FLAG_ALT;
-
+            */
 			uiDispatchEvent((uiEvent*)&ev);
 		}
+    }
 }
 
 void ui_pop_up_keys(void)

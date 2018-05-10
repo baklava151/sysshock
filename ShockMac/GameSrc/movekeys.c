@@ -51,34 +51,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Ok, here's a bunch of scan codes.
 // KLC - these have all been changed for the Mac keyboards
-#define _Q_			0x0C // q
-#define _W_			0x0D // w
-#define _E_			0x0E // e
-#define _D_			0x02 // d
-#define _A_			0x00 // a
-#define _S_ 			0x01 // s
-#define _Z_			0x06 // z
-#define _X_			0x07 // x
-#define _C_			0x08 // c
-#define _UP_			0x7E // uparrow
-#define _LEFT_		0x7B // leftarrow
-#define _DOWN_	0x7D // downarrow
-#define _RIGHT_	0x7C // rightarrow
-#define _PGUP2_	0x5C // keypad pgup
-#define _HOME2_	0x59 // keypad home
-#define _END2_		0x53 // keypad End
-#define _PGDN2_	0x55 // keypad pgdn
-#define _PAD5_		0x57 // keypad 5
-#define _UP2_		0x5B // second uparrow
-#define _LEFT2_ 	0x56 // second leftarrow
-#define _DOWN2_	0x54 // second downarrow
-#define _RIGHT2_	0x58 // second rightarrow
-#define _SPACE_	0x31 // spacebar
-#define _ENTER2_	0x4C // keypad enter
-#define _ENTER_	0x24 // enter
-#define _R_			0x0F // r
-#define _V_			0x09 // v
-#define _J_			0x26 // j
+#define _Q_			SDL_SCANCODE_Q // q
+#define _W_			SDL_SCANCODE_W // w
+#define _E_			SDL_SCANCODE_E // e
+#define _D_			SDL_SCANCODE_D // d
+#define _A_			SDL_SCANCODE_A // a
+#define _S_ 			SDL_SCANCODE_S // s
+#define _Z_			SDL_SCANCODE_Z // z
+#define _X_			SDL_SCANCODE_X // x
+#define _C_			SDL_SCANCODE_C // c
+#define _UP_			SDL_SCANCODE_UP // uparrow
+#define _LEFT_		SDL_SCANCODE_LEFT // leftarrow
+#define _DOWN_	SDL_SCANCODE_DOWN // downarrow
+#define _RIGHT_	SDL_SCANCODE_RIGHT // rightarrow
+#define _PGUP2_	SDL_SCANCODE_PAGEUP // keypad pgup
+#define _HOME2_	SDL_SCANCODE_HOME // keypad home
+#define _END2_		SDL_SCANCODE_END // keypad End
+#define _PGDN2_	SDL_SCANCODE_PAGEDOWN // keypad pgdn
+#define _PAD5_		SDL_SCANCODE_KP_5 // keypad 5
+#define _UP2_		SDL_SCANCODE_KP_XOR // second uparrow (randomly chosen)
+#define _LEFT2_ 	SDL_SCANCODE_CURRENCYSUBUNIT // second leftarrow (randomly chosen)
+#define _DOWN2_	SDL_SCANCODE_COMPUTER // second downarrow (randomly chosen)
+#define _RIGHT2_	 SDL_SCANCODE_KP_MEMADD // second rightarrow
+#define _SPACE_	SDL_SCANCODE_SPACE // spacebar
+#define _ENTER2_	SDL_SCANCODE_KP_ENTER // keypad enter
+#define _ENTER_	SDL_SCANCODE_RETURN // enter
+#define _R_			SDL_SCANCODE_R // r
+#define _V_			SDL_SCANCODE_V // v
+#define _J_			SDL_SCANCODE_J // j
 
 
 // Ok, these are cooked keycodes for all the motion keys.  

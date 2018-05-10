@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * $Date: 1994/11/18 12:18:09 $
  *
  */
-
+#include "slab.h"
 #include "cursors.h"
 #include "res.h"
 #include "2dres.h"

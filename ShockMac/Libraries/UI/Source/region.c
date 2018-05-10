@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <_ui.h>
 #include "region.h"
 #include "slist.h"
+#include <stdlib.h>
 
 #include "gadgets.h"
 
@@ -186,8 +187,8 @@ errtype region_destroy(LGRegion *reg, bool draw)
    // Then, we kill OURSELVES!!!!!!!!!!!!
    if (AUTODESTROY_FLAG & reg->status_flags)
    {
-      DisposePtr((Ptr)reg->r);
-      DisposePtr((Ptr)reg);
+      free(reg->r);
+      free(reg);
    }
    return(OK);
 }

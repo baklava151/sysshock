@@ -8,11 +8,7 @@ inputlib.o: $(OBJECTS)
 all: $(OBJECTS)
 
 %.o: %.c
-ifeq ($(DBG),y)
 	gcc $(CFLAGS) -I../../H -I../../LG/Source -o $@ $<
-else
-	gcc $(CFLAGS) -I../../H -I../../LG/Source -o $@ $<
-endif
 
 .PHONY: clean
 

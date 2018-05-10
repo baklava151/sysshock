@@ -69,7 +69,7 @@ typedef struct _ui_raw_key_event
   UIEVFRONT    
   short  scancode;    // subtype
   uchar  action;      // KBS_UP or _DOWN
-  ushort mods;		  // KLC - modifiers added for Mac version
+    //ushort mods;		  // KLC - modifiers added for Mac version
   UIEVBACK(sizeof(uchar) + sizeof(ushort));
 } uiRawKeyEvent;
 
