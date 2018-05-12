@@ -278,6 +278,7 @@ typedef ushort fixang;
 
 // For Mac version: The PowerPC version uses two assembly language routines
 // to do the multiply and divide.
+/*
 #if defined(powerc) || defined(__powerc)
 
 extern "C"
@@ -294,14 +295,14 @@ fix fix_mul_div_asm (fix m0, fix m1, fix d);
 #define fix_mul_div fix_mul_div_asm
 
 #else
-
+*/
 fix fix_mul(fix a, fix b);
 fix fix_div(fix a, fix b);
 fix fix_mul_div (fix m0, fix m1, fix d);
 fix fast_fix_mul_int(fix a, fix b);
 #define fast_fix_mul fix_mul
 
-#endif
+//#endif
 
 
 //========================================
@@ -325,11 +326,11 @@ fix fix_safe_pyth_dist (fix a, fix b);
 // Returns 0 if x < 0
 fix fix_sqrt (fix x);
 
-#if defined(powerc) || defined(__powerc)
+//#if defined(powerc) || defined(__powerc)
 long quad_sqrt(long hi, long lo);
-#else
-long quad_sqrt(long hi, long lo);
-#endif
+//#else
+//long quad_sqrt(long hi, long lo);
+//#endif
 
 
 // Returns 0 if x < 0
@@ -418,6 +419,7 @@ typedef long fix24;
 
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
+/*
 #if defined(powerc) || defined(__powerc)
 
 extern "C"
@@ -429,11 +431,11 @@ fix24 fix24_div_asm(fix24 a, fix24 b);
 #define fix24_div fix24_div_asm
 
 #else
-
+*/
 fix24 fix24_mul(fix24 a, fix24 b);
 fix24 fix24_div (fix24 a, fix24 b);
 
-#endif
+//#endif
 
 /* еее Fix this
 fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
@@ -447,10 +449,9 @@ fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
 fix24 fix24_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_fast_pyth_dist (fix24 a, fix24 b);
 fix24 fix24_safe_pyth_dist (fix24 a, fix24 b);
-/* еее Fix this
 fix24 fix24_sqrt (fix24 x);
-#pragma aux fix24_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
-*/
+//#pragma aux fix24_sqrt parm [eax] value [eax] modify [eax ebx ecx edx esi edi]
+
 void fix24_sincos (fixang theta, fix24 *sin, fix24 *cos);
 fix24 fix24_sin (fixang theta);
 fix24 fix24_cos (fixang theta);
@@ -476,7 +477,7 @@ struct AWide
 	unsigned long	lo;
 };
 typedef struct AWide AWide;
-
+/*
 #if defined(powerc) || defined(__powerc)
 extern "C"
 {
@@ -497,12 +498,14 @@ extern long AsmWideDivide(long hi, long lo, long den);
 }
 
 #else
+*/
 extern AWide *AsmWideAdd(AWide *target, AWide *source);
 extern AWide *AsmWideMultiply(long multiplicand, long multiplier, AWide *target);
 extern long AsmWideDivide(long hi, long lo, long divisor);
+extern AWide *AsmWideSub(AWide *target, AWide *source);
 extern AWide *AsmWideNegate(AWide *target);
 extern AWide *AsmWideBitShift(AWide *src, long shift);
-#endif
+//#endif
 
 
 #endif /* !__fix24_H */

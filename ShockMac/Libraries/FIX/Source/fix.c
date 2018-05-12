@@ -90,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
-#include <FixMath.h>
+//#include <FixMath.h>
 //#include <stdio.h>
 //#include <lg.h>
 #include "fix.h"
@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 int	gOVResult;
 
-
+/*
 //----------------------------------------------------------------------------
 // fix_mul: Multiply two fixed numbers.
 //----------------------------------------------------------------------------
@@ -236,7 +236,7 @@ fix asm fix_mul_div (fix m0, fix m1, fix d)
 	rts
  }
 #endif
-
+*/
 
 int blah;
 
@@ -298,7 +298,7 @@ fix fix_safe_pyth_dist (fix a, fix b)
 		if (a > 0x2fffffff)
 		{
 //			Warning (("Overflow in fix_safe_pyth_dist\n"));
-			DebugStr("\pOverflow in fix_safe_pyth_dist");
+//			DebugStr("\pOverflow in fix_safe_pyth_dist");
 			return 0;
 		}
 		for (;;)
@@ -527,7 +527,7 @@ fixang fix_atan2 (fix y, fix x)
 
 	return th;
 }
-
+/*
 //----------------------------------------------------------------------------
 // fix24_div: Divide two fix24 numbers.
 //----------------------------------------------------------------------------
@@ -580,7 +580,7 @@ fix24 asm fix24_mul(fix24 a, fix24 b)
  }
 
 #endif
-
+*/
 
 fix fix_pow(fix x,fix y)
 {
@@ -605,7 +605,7 @@ fix fix_pow(fix x,fix y)
    }
    return ans;
 }
-
+/*
 //----------------------------------------------------------------------------
 // AsmWideDivide: Divide a 64 bit long by a 32 bit long, return 32 bit result.
 //----------------------------------------------------------------------------
@@ -743,3 +743,4 @@ asm AWide *AsmWideBitShift(AWide *src, long shift)
  
  
 #endif
+*/
