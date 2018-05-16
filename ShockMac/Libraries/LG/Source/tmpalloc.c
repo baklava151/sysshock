@@ -57,8 +57,8 @@ int temp_mem_init(MemStack *ms)
 //      Spew(DSRC_LG_Tempmem,
 //           ("TempMemInit: dynamically allocating stack of %d bytes\n",
 //            TEMP_BUF_SIZE));
-//      if ((ms=(MemStack *)Malloc(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
-      if ((ms=(MemStack *)NewPtr(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
+      if ((ms=(MemStack *)malloc(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
+//      if ((ms=(MemStack *)NewPtr(sizeof(MemStack)+TEMP_BUF_SIZE))==NULL) {
          Warning(("TempMemInit: can't allocate dynamic buffer.\n"));
          return -1;
       }
@@ -82,8 +82,8 @@ int temp_mem_uninit(void)
    if (stack_dynamic==TRUE) {
 //      Spew(DSRC_LG_Tempmem,
 //           ("TempMemUninit: freeing dynamically allocated stack\n"));
-//      free(temp_mem_stack);
-      DisposePtr((Ptr)temp_mem_stack);
+      free(temp_mem_stack);
+//      DisposePtr((Ptr)temp_mem_stack);
       stack_dynamic=FALSE;
    }
    temp_mem_stack=NULL;

@@ -1,4 +1,4 @@
-OBJECTS := memall.o LGmem.o dbg.o lgsprntf.o custom.o
+OBJECTS := memall.o LGmem.o dbg.o lgsprntf.o custom.o tmpalloc.o stack.o
 
 reslib.o: $(OBJECTS)
 	ld -m elf_i386 -r $(OBJECTS) -o lglib.o
@@ -6,11 +6,7 @@ reslib.o: $(OBJECTS)
 all: $(OBJECTS)
 
 %.o: %.c
-ifeq ($(DBG),y)
-	gcc -c -fpack-struct=2 -g -m32 -I../../FIX/Source -I../../LG/Source -I../../H -I../../INPUT/Source -Wno-unused-result -o $@ $<
-else
-	gcc -c -fpack-struct=2 -O2 -m32 -I../../FIX/Source -I../../LG/Source -I../../H -I../../INPUT/Source -Wno-unused-result -o $@ $<
-endif
+	gcc $(CFLAGS) -I../../FIX/Source -I../../LG/Source -I../../H -I../../INPUT/Source -o $@ $<
 
 .PHONY: clean
 
