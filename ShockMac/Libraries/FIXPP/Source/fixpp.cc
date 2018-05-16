@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 // еее For now, turn debugging on, so we can run the test programs.
-#define FIXDEBUG 1
+//#define FIXDEBUG 1
 
 
 #include <math.h>
@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "fixpp.h"
 
 
-
+using namespace std;
 
 
 #ifdef FIXDEBUG

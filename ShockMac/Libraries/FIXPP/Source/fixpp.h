@@ -29,13 +29,14 @@ bravery, and to C++ for being such a complex and neurotic language.
 #ifndef __FIXPP_H
 #define __FIXPP_H
 
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 
 //#include "mprintf.h"
 #include "fix.h"                       // A big thank you to Dan and Matt.
 
+using namespace std;
 
 // How many bits to shift an integer up to make it a fixpoint.
 // ===========================================================
@@ -53,7 +54,7 @@ bravery, and to C++ for being such a complex and neurotic language.
 
 // Define this for some misc. debugging things like touch()
 // ========================================================
-//#define FIXDEBUG
+#define FIXDEBUG
 
 
 #ifdef FIXDEBUG

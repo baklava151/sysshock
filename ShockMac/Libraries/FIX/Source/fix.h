@@ -278,32 +278,32 @@ typedef ushort fixang;
 
 // For Mac version: The PowerPC version uses two assembly language routines
 // to do the multiply and divide.
-/*
-#if defined(powerc) || defined(__powerc)
 
-extern "C"
-{
+//#if defined(powerc) || defined(__powerc)
+
+//extern "C"
+//{
 fix fix_mul_asm(fix a, fix b);
 fix fast_fix_mul_int_asm(fix a, fix b);
 fix fix_div_asm(fix a, fix b);
 fix fix_mul_div_asm (fix m0, fix m1, fix d);
-}
+//}
 #define fix_mul fix_mul_asm
 #define fast_fix_mul fix_mul_asm
 #define fast_fix_mul_int fast_fix_mul_int_asm
 #define fix_div fix_div_asm
 #define fix_mul_div fix_mul_div_asm
 
-#else
-*/
+//#else
+/*
 fix fix_mul(fix a, fix b);
 fix fix_div(fix a, fix b);
 fix fix_mul_div (fix m0, fix m1, fix d);
 fix fast_fix_mul_int(fix a, fix b);
 #define fast_fix_mul fix_mul
 
-//#endif
-
+#endif
+*/
 
 //========================================
 //
@@ -419,24 +419,24 @@ typedef long fix24;
 
 // For Mac version: The PowerPC version uses an assembly language routine
 // to do the multiply.
-/*
-#if defined(powerc) || defined(__powerc)
 
-extern "C"
-{
+//#if defined(powerc) || defined(__powerc)
+
+//extern "C"
+//{
 fix24 fix24_mul_asm(fix24 a, fix24 b);
 fix24 fix24_div_asm(fix24 a, fix24 b);
-}
+//}
 #define fix24_mul fix24_mul_asm
 #define fix24_div fix24_div_asm
-
+/*
 #else
-*/
+
 fix24 fix24_mul(fix24 a, fix24 b);
 fix24 fix24_div (fix24 a, fix24 b);
 
-//#endif
-
+#endif
+*/
 /* еее Fix this
 fix24 fix24_mul_div (fix24 m0, fix24 m1, fix24 d);
 #pragma aux fix24_mul_div =\
