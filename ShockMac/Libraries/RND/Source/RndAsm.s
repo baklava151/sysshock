@@ -18,13 +18,13 @@
 	; Need to export both the function descriptor and an entry point for
 	; all routines.
 	
-	export high_umpy[DS]
-	export .high_umpy__FUlUl[PR]
+;	export high_umpy[DS]
+;	export .high_umpy__FUlUl[PR]
 
 	; create a TOC entry for the the function descriptor for each function.
 
-	toc
-		tc high_umpy[TC], high_umpy[DS]
+;	toc
+;		tc high_umpy[TC], high_umpy[DS]
 
 	; The function descriptor contains definitions used for runtime linkage
 	; of the function.  The address of the function entry point must be in 
@@ -34,18 +34,25 @@
 	; contains the environment pointer, which is not used by C and so is set
 	; to 0.
 	
-	csect	high_umpy[DS]
-		dc.l	.high_umpy__FUlUl[PR]
-		dc.l	TOC[tc0]
-		dc.l	0
+;	csect	high_umpy[DS]
+;		dc.l	.high_umpy__FUlUl[PR]
+;		dc.l	TOC[tc0]
+;		dc.l	0
 		
 	; This is the actual code of the high_umpy function
 
-	csect	.high_umpy__FUlUl[PR]
+;	csect	.high_umpy__FUlUl[PR]
 
 ;
 ;  ulong high_umpy(ulong a, ulong b)
 ;
-		mulhwu	r3,r3,r4				; oooh, this is tough.
-		blr
+;		mulhwu	r3,r3,r4				; oooh, this is tough.
+    ;		blr
+section .text
+global high_umpy
+high_umpy:
+    mov eax, [esp+4]
+    mul DWORD [esp+8]
+    mov eax, edx
+    ret
 

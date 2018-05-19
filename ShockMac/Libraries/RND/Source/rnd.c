@@ -118,6 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "lg.h"
 #include "rnd.h"
+#include <stdlib.h>
 
 //	For gruesome interrupt routines, let 'em have their way:
 
@@ -134,10 +135,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    parm [eax] [edx]  \
    modify [eax edx];
 */
-#if defined(powerc) || defined(__powerc)
+                                    //#if defined(powerc) || defined(__powerc)
 
 ulong high_umpy(ulong a, ulong b);					//  Code in RndAsm.s
-
+/*
 #else
 ulong high_umpy(ulong a, ulong b);					// Proto
 ulong asm high_umpy(ulong a, ulong b)
@@ -148,7 +149,7 @@ ulong asm high_umpy(ulong a, ulong b)
  	rts
  }
 #endif
-
+*/
 //	---------------------------------------------------------------
 //		ROUTINES WHICH SCALE RNUMS INTO RANGE
 //	---------------------------------------------------------------
@@ -271,7 +272,7 @@ void RndGauss16FastSeed(RndStream *prs, ulong seed)
 
 	if (gaussTable == NULL)
 	{
-		pg = gaussTable = (ushort *)NewPtr(SIZE_GAUSSTABLE * sizeof(short));
+		pg = gaussTable = (ushort *)malloc(SIZE_GAUSSTABLE * sizeof(short));
 		for (i = 0; i < SIZE_GAUSSTABLE; i++)
 		{
 			prs->curr = i;
